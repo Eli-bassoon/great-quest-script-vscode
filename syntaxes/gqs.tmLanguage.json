@@ -1,0 +1,214 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "Great Quest Script",
+	"patterns": [
+		{ "include": "#comments" },
+		{ "include": "#strings" },
+		{ "include": "#keywords" },
+		{ "include": "#flags" },
+		{ "include": "#constants" },
+		{ "include": "#hash" },
+		{ "include": "#equal" },
+		{ "include": "#numeric" },
+		{ "include": "#identifier" },
+		{ "include": "#section" }
+	],
+	"repository": {
+		"strings": {
+			"name": "string.quoted.double.gqs",
+			"match": "\".*?\"",
+			"patterns": [
+				{
+					"name": "constant.character.escape.gqs",
+					"match": "\\\\."
+				}
+			]
+		},
+		"hash": {
+			"name": "constant.numeric.hash.gqs",
+			"match": "0x(\\d|[A-F]|[a-f])+"
+		},
+		"identifier": {
+			"patterns": [
+				{
+					"name": "variable.other.gqs",
+					"match": "[\\w\\d\\-\\./_\\\\]+"
+				},
+				{
+					"name": "variable.other.seqs.gqs",
+					"match": "{.*?}"
+				},
+				{
+					"name": "variable.other.seq.gqs",
+					"match": "(?<!^)\\[+.+?\\]+"
+				}
+			]
+		},
+		"equal": {
+			"name": "constant.character.eq.gqs",
+			"match": "="
+		},
+		"numeric": {
+			"patterns": [
+				{
+					"name": "constant.numeric.float.gqs",
+					"match": "(?<!\\w)[+-]?([0-9]+[.]([0-9]*)?|[.][0-9]+)(?!\\w)"
+				},
+				{
+					"name": "constant.numeric.dec.gqs",
+					"match": "(?<!\\w)[+-]?[0-9]+(?!\\w)"
+				},
+				{
+					"name": "constant.numeric.limits.gqs",
+					"match": "MAX"
+				}
+			]
+		},
+		"section": {
+			"patterns": [
+				{
+					"name": "entity.name.section.language.gqs",
+					"match": "\\[(Models|Textures|SoundEffects|CopyResources|DeleteResources|Animations|Sequences|Dialog|Collision|Launchers|EntityDescriptions|Entities|Scripts|Include|Script|Function)\\]"
+				},
+				{
+					"name": "entity.name.section.other.gqs",
+					"match": "\\[+.+?\\]+"
+				}
+			]
+		},
+		"keywords": {
+			"patterns": [
+				{
+					"name": "keyword.other.kcscript.function.gqs",
+					"match": "DoNothing|EndScript|Entity\\.Activate|Entity\\.Deactivate|SetEnable|TerminateEntity|SetFlags|ClearFlags|InitFlags|SetState|SetTarget|SetAnimationSpeed|SetAxisPosition|SetPosition|AddToAxisPosition|AddPosition|SetAxisRotation|SetRotation|AddToAxisRotation|AddRotation|RotateRight|RotateLeft|LookAtTargetEntity|SetAnimation|SetSequence|Wait(ForAxisRotation|ForFullRotation|ForAnimation)?|Loop|ApplyImpulse|Prompt|ShowDialog|SetAlarm|TriggerEvent|PlaySound|SetVariable|AddToVariable|SendNumber|SpawnParticleEffect|KillParticleEffect|Launcher|SendPlayerHasItem|SetPlayerHasItem|TakeDamage|SetSavePoint|Entity\\.EnableUpdates|Entity\\.DisableUpdates|SetUpdatesEnabled|SetAIGoal|Attach(Sensor)?|Detach|Entity\\.ActivateSpecial|ActivateCamera|DeactivateCamera|SetCameraTarget|SetCameraPivot|SetCameraParam"
+				},
+				{
+					"name": "keyword.other.kcscript.cause.gqs",
+					"match": "OnLevel|OnPlayer|OnActor|OnDamage|OnAlarm|OnPrompt|OnEventTrigger|OnDialog|OnReceiveNumber|OnReceivePlayerHasItem|OnEntity|OnWaypoint"
+				}
+			]
+		},
+		"constants": {
+			"patterns": [
+				{
+					"name": "constant.language.kscript.argument.onlevel.gqs",
+					"match": "BEGIN|END"
+				},
+				{
+					"name": "constant.language.kscript.argument.onplayer.gqs",
+					"match": "INTERACT|BUMPS|TARGET_FOR_ATTACK|PICKUP_ITEM"
+				},
+				{
+					"name": "constant.language.kscript.argument.onactor.gqs",
+					"match": "BUMPS|HEAL|DEATH"
+				},
+				{
+					"name": "constant.language.kscript.argument.ondamage.gqs",
+					"match": "FIRE|ICE|MELEE|RANGED|FALL|UNNAMED_TYPE_\\d\\d?"
+				},
+				{
+					"name": "constant.language.kscript.argument.onalarm.gqs",
+					"match": "REPEAT|FINISHED"
+				},
+				{
+					"name": "constant.language.kscript.argument.ondialog.gqs",
+					"match": "BEGIN|ADVANCE"
+				},
+				{
+					"name": "constant.language.kscript.argument.onreceivenumber.gqs",
+					"match": "EQUAL_TO|NOT_EQUAL_TO|LESS_THAN|GREATER_THAN|LESS_THAN_OR_EQUAL_TO|GREATER_THAN_OR_EQUAL_TO"
+				},
+				{
+					"name": "constant.language.kscript.argument.onentity.gqs",
+					"match": "ENTERS_TARGET_WAYPOINT_AREA|LEAVES_TARGET_WAYPOINT_AREA"
+				},
+				{
+					"name": "constant.language.kscript.argument.onwaypoint.gqs",
+					"match": "ENTITY_ENTERS|ENTITY_LEAVES"
+				},
+				{
+					"name": "constant.language.kscript.argument.axis.gqs",
+					"match": "X|Y|Z"
+				},
+				{
+					"name": "constant.language.kscript.argument.triggerevent.gqs",
+					"match": "LevelCompleted|BeginScreenFade|EndScreenFade|LockPlayerControl|UnlockPlayerControl|ShakeCameraRand|PlayMidMovie01|PlayMidMovie02|PlayMidMovie03|PlayMidMovie04|PlayMidMovie05|PlayMidMovie06|PlayMidMovie07|PlayMidMovie08|PlayMidMovie09|PlayMidMovie10|LevelLoadComplete|LevelBegin|LevelEnd|LevelUnload|DialogBegin|DialogAdvance|DialogEnd|StartMovie|CutMovie|MovieContinueGame|LevelLoad|LevelUnloadComplete|PlayerAttack|PlayerDamage|PlayerDead|MovieCutFog|ModeAfterMovie|TracePublicEvent|EvStartDemoBGM"
+				},
+				{
+					"name": "constant.language.kscript.argument.sendnumber.gqs",
+					"match": "LITERAL|VARIABLE|RANDOM"
+				},
+				{
+					"name": "constant.language.kscript.argument.setaigoal.gqs",
+					"match": "FIND|FLEE|WANDER|GUARD|DEAD|SLEEP"
+				},
+				{
+					"name": "constant.language.kscript.argument.attach.gqs",
+					"match": "ATTACK_SENSOR|BUMP_SENSOR|LAUNCHER|PARTICLE_EMITTER"
+				},
+				{
+					"name": "constant.language.kscript.argument.detach.gqs",
+					"match": "PARTICLE_EMITTER"
+				},
+				{
+					"name": "constant.language.kscript.argument.activatespecial.gqs",
+					"match": "ENTITIES|TERRAIN|BOTH"
+				},
+				{
+					"name": "constant.language.kscript.argument.setcameraparam.gqs",
+					"match": "PIVOT_DISTANCE|TARGET_OFFSET_X|TARGET_OFFSET_Y|TARGET_OFFSET_Z|PIVOT_OFFSET_X|PIVOT_OFFSET_Y|PIVOT_OFFSET_Z|TRANSITION_DURATION|LOCK_PIVOT_Y"
+				}
+			]
+		},
+		"booleans": {
+			"name": "constant.language.gqs",
+			"match": "true|false"
+		},
+		"flags": {
+			"patterns": [
+				{
+					"name": "constant.language.flag.entity.gqs",
+					"match": "--(Hide|UnusedBitFlag01|ForceStayActive|FaceTargetEntity|HideShadow|AllowWaypointInteraction|Active|EnableTerrainTracking|DisableAI|EnableCollision|EnablePhysics|CanTakeDamage|UnusedBitFlag11|UnusedBitFlag12|PlayerCanInteract|ResetEntity|UpdatesEnabled|PreventDeath)"
+				},
+				{
+					"name": "constant.language.flag.sequence.gqs",
+					"match": "--(IgnoreIfAlreadyActive|OpenBoneChannel)"
+				},
+				{
+					"name": "constant.language.flag.setanimation.gqs",
+					"match": "--(Repeat|Reverse|ReverseOnComplete|StartTime)"
+				},
+				{
+					"name": "constant.language.flag.damage.gqs",
+					"match": "--(Fire|Ice|Melee|Ranged|Fall|UnnamedDamageType\\d\\d?)"
+				},
+				{
+					"name": "constant.language.flag.models.gqs",
+					"match": "--CreateModelDesc"
+				},
+				{
+					"name": "constant.language.flag.textures.gqs",
+					"match": "--(Import|Resize|Delete)"
+				},
+				{
+					"name": "constant.language.flag.soundeffects.gqs",
+					"match": "--(Music|VoiceClip|Repeat|Priority|Volume|Pan|Pitch|SampleRate|BitDepth|ChannelCount|Embedded|Stream|Import)"
+				},
+				{
+					"name": "constant.language.flag.alarm.gqs",
+					"match": "--Repeat"
+				},
+				{
+					"name": "constant.language.flag.general.gqs",
+					"match": "--(AsEntity|ExternalEntity)"
+				}
+			]
+		},
+		"comments": {
+			"name": "comment.line.gqs",
+			"begin": "#",
+			"end": "$"
+		}
+	},
+	"scopeName": "source.gqs"
+}

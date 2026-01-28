@@ -7,7 +7,7 @@
     "vscode": "^1.108.1"
   },
   "categories": [
-    "Other"
+    "Programming Languages"
   ],
   "activationEvents": [],
   "main": "./out/extension.js",
@@ -17,7 +17,18 @@
         "command": "great-quest-script.helloWorld",
         "title": "Hello World"
       }
-    ]
+    ],
+    "languages": [{
+      "id": "gqs",
+      "aliases": ["Great Quest Script", "gqs"],
+      "extensions": [".gqs"],
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "gqs",
+      "scopeName": "source.gqs",
+      "path": "./syntaxes/gqs.tmLanguage.json"
+    }]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
