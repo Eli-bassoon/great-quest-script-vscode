@@ -14,21 +14,47 @@
   "contributes": {
     "commands": [
       {
-        "command": "great-quest-script.helloWorld",
-        "title": "Hello World"
+        "command": "great-quest-script.debughelp",
+        "title": "GQS Debug"
       }
     ],
-    "languages": [{
-      "id": "gqs",
-      "aliases": ["Great Quest Script", "gqs"],
-      "extensions": [".gqs"],
-      "configuration": "./language-configuration.json"
-    }],
-    "grammars": [{
-      "language": "gqs",
-      "scopeName": "source.gqs",
-      "path": "./syntaxes/gqs.tmLanguage.json"
-    }]
+    "languages": [
+      {
+        "id": "gqs",
+        "aliases": [
+          "Great Quest Script",
+          "gqs"
+        ],
+        "extensions": [
+          ".gqs"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "gqs",
+        "scopeName": "source.gqs",
+        "path": "./syntaxes/gqs.tmLanguage.json"
+      }
+    ],
+    "configuration": {
+      "title": "Great Quest Script Extension",
+      "type": "object",
+      "properties": {
+        "greatQuestScript.inlineDialog": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to show dialog inline when it is used by ShowDialog and OnDialogAdvance"
+        }
+      }
+    },
+    "configurationDefaults": {
+      "[gqs]": {
+        "editor.wordSeparators": "`~!@#$%^&*()=+\\|;:'\",.<>/?",
+        "editor.stickyScroll.defaultModel": "foldingProviderModel"
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
@@ -39,13 +65,14 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.108.1",
     "@types/mocha": "^10.0.10",
     "@types/node": "22.x",
-    "typescript-eslint": "^8.52.0",
+    "@types/vscode": "^1.108.1",
+    "@vscode/test-cli": "^0.0.12",
+    "@vscode/test-electron": "^2.5.2",
     "eslint": "^9.39.2",
     "typescript": "^5.9.3",
-    "@vscode/test-cli": "^0.0.12",
-    "@vscode/test-electron": "^2.5.2"
-  }
+    "typescript-eslint": "^8.52.0"
+  },
+  "dependencies": {}
 }

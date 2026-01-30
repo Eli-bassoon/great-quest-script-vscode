@@ -16,7 +16,8 @@
 	"repository": {
 		"strings": {
 			"name": "string.quoted.double.gqs",
-			"match": "\".*?\"",
+			"begin": "\"",
+			"end": "\"",
 			"patterns": [
 				{
 					"name": "constant.character.escape.gqs",
@@ -32,7 +33,7 @@
 			"patterns": [
 				{
 					"name": "variable.other.gqs",
-					"match": "[\\w\\d\\-\\./_\\\\]+"
+					"match": "[\\w\\-\\./\\\\]+"
 				},
 				{
 					"name": "variable.other.seqs.gqs",
@@ -52,11 +53,11 @@
 			"patterns": [
 				{
 					"name": "constant.numeric.float.gqs",
-					"match": "(?<!\\w)[+-]?([0-9]+[.]([0-9]*)?|[.][0-9]+)(?!\\w)"
+					"match": "(?<=\\D)[+-]?([0-9]+[.]([0-9]*)?|[.][0-9]+)(?=\\D)"
 				},
 				{
 					"name": "constant.numeric.dec.gqs",
-					"match": "(?<!\\w)[+-]?[0-9]+(?!\\w)"
+					"match": "(?<=\\D)[+-]?[0-9]+(?=\\D)"
 				},
 				{
 					"name": "constant.numeric.limits.gqs",
@@ -80,11 +81,11 @@
 			"patterns": [
 				{
 					"name": "keyword.other.kcscript.function.gqs",
-					"match": "DoNothing|EndScript|Entity\\.Activate|Entity\\.Deactivate|SetEnable|TerminateEntity|SetFlags|ClearFlags|InitFlags|SetState|SetTarget|SetAnimationSpeed|SetAxisPosition|SetPosition|AddToAxisPosition|AddPosition|SetAxisRotation|SetRotation|AddToAxisRotation|AddRotation|RotateRight|RotateLeft|LookAtTargetEntity|SetAnimation|SetSequence|Wait(ForAxisRotation|ForFullRotation|ForAnimation)?|Loop|ApplyImpulse|Prompt|ShowDialog|SetAlarm|TriggerEvent|PlaySound|SetVariable|AddToVariable|SendNumber|SpawnParticleEffect|KillParticleEffect|Launcher|SendPlayerHasItem|SetPlayerHasItem|TakeDamage|SetSavePoint|Entity\\.EnableUpdates|Entity\\.DisableUpdates|SetUpdatesEnabled|SetAIGoal|Attach(Sensor)?|Detach|Entity\\.ActivateSpecial|ActivateCamera|DeactivateCamera|SetCameraTarget|SetCameraPivot|SetCameraParam"
+					"match": "Entity\\.Activate|Entity\\.Deactivate|TerminateEntity|SetFlags|ClearFlags|InitFlags|SetTarget|SetAnimationSpeed|SetAxisPosition|SetPosition|AddToAxisPosition|AddPosition|SetAxisRotation|SetRotation|AddToAxisRotation|AddRotation|RotateRight|RotateLeft|LookAtTargetEntity|SetAnimation|SetSequence|Wait(ForAxisRotation|ForFullRotation|ForAnimation)?|Loop|ApplyImpulse|ShowDialog|SetAlarm|TriggerEvent|PlaySound|SetVariable|AddToVariable|SendNumber|SpawnParticleEffect|KillParticleEffect|SendPlayerHasItem|SetPlayerHasItem|TakeDamage|SetSavePoint|Entity\\.EnableUpdates|Entity\\.DisableUpdates|SetAIGoal|Attach(Sensor)?|Detach|Entity\\.ActivateSpecial|ActivateCamera|DeactivateCamera|SetCameraTarget|SetCameraPivot|SetCameraParam"
 				},
 				{
 					"name": "keyword.other.kcscript.cause.gqs",
-					"match": "OnLevel|OnPlayer|OnActor|OnDamage|OnAlarm|OnPrompt|OnEventTrigger|OnDialog|OnReceiveNumber|OnReceivePlayerHasItem|OnEntity|OnWaypoint"
+					"match": "OnLevel|OnPlayer|OnActor|OnDamage|OnAlarm|OnEventTrigger|OnDialog|OnReceiveNumber|OnReceivePlayerHasItem|OnEntity|OnWaypoint"
 				}
 			]
 		},
@@ -116,7 +117,7 @@
 				},
 				{
 					"name": "constant.language.kscript.argument.onreceivenumber.gqs",
-					"match": "EQUAL_TO|NOT_EQUAL_TO|LESS_THAN|GREATER_THAN|LESS_THAN_OR_EQUAL_TO|GREATER_THAN_OR_EQUAL_TO"
+					"match": "EQUAL_TO|NOT_EQUAL_TO|LESS_THAN(_OR_EQUAL_TO)?|GREATER_THAN(_OR_EQUAL_TO)?"
 				},
 				{
 					"name": "constant.language.kscript.argument.onentity.gqs",
@@ -168,7 +169,7 @@
 			"patterns": [
 				{
 					"name": "constant.language.flag.entity.gqs",
-					"match": "--(Hide|UnusedBitFlag01|ForceStayActive|FaceTargetEntity|HideShadow|AllowWaypointInteraction|Active|EnableTerrainTracking|DisableAI|EnableCollision|EnablePhysics|CanTakeDamage|UnusedBitFlag11|UnusedBitFlag12|PlayerCanInteract|ResetEntity|UpdatesEnabled|PreventDeath)"
+					"match": "--(Hide(Shadow)?|UnusedBitFlag01|ForceStayActive|FaceTargetEntity|AllowWaypointInteraction|Active|EnableTerrainTracking|DisableAI|EnableCollision|EnablePhysics|CanTakeDamage|UnusedBitFlag11|UnusedBitFlag12|PlayerCanInteract|ResetEntity|UpdatesEnabled|PreventDeath)"
 				},
 				{
 					"name": "constant.language.flag.sequence.gqs",
