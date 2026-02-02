@@ -6,7 +6,7 @@ import * as vscode from 'vscode';
 
 import { keywords, kcScriptFunction } from './keywords';
 import { propertyLists } from './propertylist';
-import { getSectionNesting, getEntityDescType } from './parsing';
+import { getSectionNesting, getEntityDescType, getDialogDefinitions } from './parsing';
 
 export let decorationType = vscode.window.createTextEditorDecorationType({
     after: {
@@ -56,36 +56,4 @@ export function updateDialogDecorations() {
     }
 
     editor.setDecorations(decorationType, decorations);
-}
-
-// Finds all the definitions of dialog in the document
-function getDialogDefinitions(document: vscode.TextDocument): Map<string, string> {
-    const definitions = new Map<string, string>();
-
-    for (var line = 0; line < document.lineCount; ++line) {
-        if (document.lineAt(line).text.startsWith('[Dialog]')) {
-            ++line;
-            break;
-        }
-    }
-    // See if there exists a dialog section at all
-    if (line === document.lineCount) {
-        return definitions;
-    }
-
-    // Now parse each dialog definition
-    for (; line < document.lineCount; ++line) {
-        // If we hit a new section, stop searching
-        const lineText = document.lineAt(line);
-        if (lineText.isEmptyOrWhitespace) continue; // Skip empty lines
-        if (lineText.text.startsWith('[')) return definitions; // Stop when we reach a new section
-
-        const match = lineText.text.match(/^(?<name>\w+)\s*=\s*"(?<dialog>(?:[^"\\]|\\.)*)"/); // Match `DIALOG_NAME="Some string"`, checking for escaped double quotes
-        if (match && match.groups) {
-            definitions.set(match.groups.name, match.groups.dialog);
-        }
-    }
-
-    // Return definitions on EOF
-    return definitions;
 }
