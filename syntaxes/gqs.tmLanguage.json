@@ -4,12 +4,12 @@
 	"patterns": [
 		{ "include": "#comments" },
 		{ "include": "#strings" },
+		{ "include": "#punctuation" },
+		{ "include": "#hash" },
+		{ "include": "#numeric" },
 		{ "include": "#keywords" },
 		{ "include": "#flags" },
 		{ "include": "#constants" },
-		{ "include": "#hash" },
-		{ "include": "#equal" },
-		{ "include": "#numeric" },
 		{ "include": "#identifier" },
 		{ "include": "#section" }
 	],
@@ -27,13 +27,13 @@
 		},
 		"hash": {
 			"name": "constant.numeric.hash.gqs",
-			"match": "0x(\\d|[A-F]|[a-f])+"
+			"match": "0x[a-fA-F\\d]+"
 		},
 		"identifier": {
 			"patterns": [
 				{
 					"name": "variable.other.gqs",
-					"match": "[\\w\\-\\./\\\\]+"
+					"match": "[a-zA-Z_/\\\\][\\w\\-\\./\\\\]*"
 				},
 				{
 					"name": "variable.other.seqs.gqs",
@@ -41,23 +41,31 @@
 				},
 				{
 					"name": "variable.other.seq.gqs",
-					"match": "(?<!^)\\[+.+?\\]+"
+					"match": "(?<!^)\\[.+?\\]"
 				}
 			]
 		},
-		"equal": {
-			"name": "constant.character.eq.gqs",
-			"match": "="
+		"punctuation": {
+			"patterns": [
+				{
+					"name": "punctuation.eq.gqs",
+					"match": "="
+				},
+				{
+					"name": "punctuation.comma.gqs",
+					"match": ","
+				}
+			]
 		},
 		"numeric": {
 			"patterns": [
 				{
 					"name": "constant.numeric.float.gqs",
-					"match": "(?<=\\D)[+-]?([0-9]+[.]([0-9]*)?|[.][0-9]+)(?=\\D)"
+					"match": "[+-]?([0-9]+[.]([0-9]*)?|[.][0-9]+)"
 				},
 				{
 					"name": "constant.numeric.dec.gqs",
-					"match": "(?<=\\D)[+-]?[0-9]+(?=\\D)"
+					"match": "[+-]?[0-9]+"
 				},
 				{
 					"name": "constant.numeric.limits.gqs",
@@ -81,7 +89,7 @@
 			"patterns": [
 				{
 					"name": "keyword.other.kcscript.function.gqs",
-					"match": "Entity\\.Activate|Entity\\.Deactivate|TerminateEntity|SetFlags|ClearFlags|InitFlags|SetTarget|SetAnimationSpeed|SetAxisPosition|SetPosition|AddToAxisPosition|AddPosition|SetAxisRotation|SetRotation|AddToAxisRotation|AddRotation|RotateRight|RotateLeft|LookAtTargetEntity|SetAnimation|SetSequence|Wait(ForAxisRotation|ForFullRotation|ForAnimation)?|Loop|ApplyImpulse|ShowDialog|SetAlarm|TriggerEvent|PlaySound|SetVariable|AddToVariable|SendNumber|SpawnParticleEffect|KillParticleEffect|SendPlayerHasItem|SetPlayerHasItem|TakeDamage|SetSavePoint|Entity\\.EnableUpdates|Entity\\.DisableUpdates|SetAIGoal|Attach(Sensor)?|Detach|Entity\\.ActivateSpecial|ActivateCamera|DeactivateCamera|SetCameraTarget|SetCameraPivot|SetCameraParam"
+					"match": "Entity\\.Activate(Special)?|Entity\\.Deactivate|TerminateEntity|SetFlags|ClearFlags|InitFlags|SetTarget|SetAnimationSpeed|SetAxisPosition|SetPosition|AddToAxisPosition|AddPosition|SetAxisRotation|SetRotation|AddToAxisRotation|AddRotation|RotateRight|RotateLeft|LookAtTargetEntity|SetAnimation|SetSequence|Wait(ForAxisRotation|ForFullRotation|ForAnimation)?|Loop|ApplyImpulse|ShowDialog|SetAlarm|TriggerEvent|PlaySound|SetVariable|AddToVariable|SendNumber|SpawnParticleEffect|KillParticleEffect|SendPlayerHasItem|SetPlayerHasItem|TakeDamage|SetSavePoint|Entity\\.EnableUpdates|Entity\\.DisableUpdates|SetAIGoal|Attach(Sensor)?|Detach|ActivateCamera|DeactivateCamera|SetCameraTarget|SetCameraPivot|SetCameraParam"
 				},
 				{
 					"name": "keyword.other.kcscript.cause.gqs",
