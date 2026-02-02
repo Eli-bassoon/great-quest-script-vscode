@@ -128,8 +128,8 @@
 					"match": "EQUAL_TO|NOT_EQUAL_TO|LESS_THAN(_OR_EQUAL_TO)?|GREATER_THAN(_OR_EQUAL_TO)?"
 				},
 				{
-					"name": "constant.language.kscript.argument.onentity.gqs",
-					"match": "ENTERS_TARGET_WAYPOINT_AREA|LEAVES_TARGET_WAYPOINT_AREA"
+					"name": "constant.language.kcscript.argument.onentity.gqs",
+					"match": "ENTERS_TARGET_WAYPOINT_AREA|LEAVES_TARGET_WAYPOINT_AREA|ENTERS_WAYPOINT_AREA|LEAVES_WAYPOINT_AREA"
 				},
 				{
 					"name": "constant.language.kscript.argument.onwaypoint.gqs",

@@ -43,7 +43,9 @@ export const kcScriptCauseArgs = {
     ],
 	"OnEntity": [
 		"ENTERS_TARGET_WAYPOINT_AREA",
-		"LEAVES_TARGET_WAYPOINT_AREA"
+		"LEAVES_TARGET_WAYPOINT_AREA",
+		"ENTERS_WAYPOINT_AREA",
+		"LEAVES_WAYPOINT_AREA",
 	],
 	"OnWaypoint": [
 		"ENTITY_ENTERS",
