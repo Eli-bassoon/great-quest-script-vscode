@@ -105,28 +105,75 @@ function getSectionCompletions(completions: vscode.CompletionItem[], ctx: GQSCom
 
     const bracketsTyped = bracketMatch[0].length;
 
+    const insideBracketRegExp = /\[+(.*?)\]+/;
+    const wordRange = ctx.document.getWordRangeAtPosition(ctx.position, insideBracketRegExp);
+
     // We are top-level if there is only one square bracket
     if (bracketsTyped === 1) {
         // Register top-level GQS sections
         for (let s of keywords.gqsSections) {
-            const completion = new vscode.CompletionItem(s, vscode.CompletionItemKind.EnumMember);
+            const completion = getSingleSectionCompletion(s, 1, wordRange);
             completions.push(completion);
         }
     }
 
-    // Autocomplete Function section
-    else if (((ctx.topSection === "Scripts") && (bracketsTyped === 3))        // In [Scripts] section
-        || ((ctx.sections.at(2) === "Script") && (bracketsTyped === 4)) // In [[[Script]]] section
+    // Register custom sections so we go to the next line when tab completing
+    if ((bracketsTyped === 2) // Always at level 2
+        || ((bracketsTyped === 3) && (ctx.topSection === "Sequences")) // At level 3 only when we are in a sequence
     ) {
-        const completion = new vscode.CompletionItem("Function", vscode.CompletionItemKind.EnumMember);
+        const sectionText = ctx.lineText.match(insideBracketRegExp);
+        if (sectionText) {
+            const completion = getSingleSectionCompletion(sectionText[1], bracketsTyped, wordRange);
+            completions.push(completion);
+        }
+    }
+
+    // Function headers
+    let completingFunction = false;
+    let functionBrackets = 0;
+
+    // [[[Function]]] inside [Scripts] -> [[Identifier]]
+    if ((ctx.topSection === "Scripts") && (ctx.sections.length >= 2)) {
+        completingFunction = true;
+        functionBrackets = 3;
+    }
+    // [[[[Function]]]] inside [Entities] -> [[Identifier]] -> [[[Scripts]]]
+    else if (((ctx.sections.at(2) === "Script") && (ctx.sections.length >= 3))) {
+        completingFunction = true;
+        functionBrackets = 4;
+    }
+
+    // Actually perform the function completion
+    if (completingFunction) {
+        const completion = getSingleSectionCompletion('Function', functionBrackets, wordRange, 'cause=');
+        // Make this the preferred selection by sorting it early
+        completion.sortText = '!!Function';
+        completion.preselect = true;
         completions.push(completion);
     }
 
     // Autocomplete [[[Script]]] when we are in [Entities] section
-    else if ((ctx.topSection === 'Entities') && (bracketsTyped === 3)) {
-        const completion = new vscode.CompletionItem("Script", vscode.CompletionItemKind.EnumMember);
+    if ((ctx.topSection === 'Entities') && (ctx.sections.length === 2)) {
+        const completion = getSingleSectionCompletion('Script', 3, wordRange);
         completions.push(completion);
     }
+}
+
+function getSingleSectionCompletion(section: string, brackets: number, wordRange: vscode.Range | undefined, afterCompletionFill: string = ""): vscode.CompletionItem {
+    const LB = '['.repeat(brackets);
+    const RB = ']'.repeat(brackets);
+
+    const completion = new vscode.CompletionItem(section, vscode.CompletionItemKind.EnumMember);
+    completion.filterText = LB + section + RB;
+    // Replace the autocomplete, then move the cursor to the next line
+    if (vscode.workspace.getConfiguration("greatQuestScript").get("gotoNextLineInSectionHeaders")) {
+        completion.insertText = new vscode.SnippetString(LB + section + RB + '\n' + afterCompletionFill + '$0');
+    }
+    else {
+        completion.insertText = LB + section + RB;
+    }
+    completion.range = wordRange;
+    return completion;
 }
 
 // Get completions when we are in the "cause=" part of a function
@@ -183,9 +230,9 @@ function getFunctionBodyCompletions(completions: vscode.CompletionItem[], ctx: G
             // Complete contextually if we are in a script or action sequence
             if ((_function.script && !inActionSequence) || (_function.sequence && inActionSequence)) {
                 const completion = new vscode.CompletionItem(_function.name, vscode.CompletionItemKind.Function);
-                completion.insertText = _function.name + ' ';
                 // Activate autocomplete again if it's an enum type
                 if (isFunctionEnumType(_function.name)) {
+                    completion.insertText = _function.name + ' ';
                     completion.command = { command: 'editor.action.triggerSuggest', title: 'Trigger Suggest' };
                 }
                 completion.documentation = new vscode.MarkdownString(doctext.kcScriptFunctionDocs[_function.name as keyof typeof doctext.kcScriptFunctionDocs]);
