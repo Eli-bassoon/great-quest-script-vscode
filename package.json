@@ -51,7 +51,7 @@
     },
     "configurationDefaults": {
       "[gqs]": {
-        "editor.wordSeparators": "`~!@#$%^&*()=+\\|;:'\",.<>/?",
+        "editor.wordSeparators": "`~!@#$%^&*()=+\\|;:'\",<>/?",
         "editor.stickyScroll.defaultModel": "foldingProviderModel"
       }
     }

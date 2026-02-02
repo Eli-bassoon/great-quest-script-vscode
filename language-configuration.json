@@ -26,5 +26,5 @@
         ["'", "'"]
     ],
     // Matches flags of form --SomeText, words of form SomeText, and integers or floats -4 or +42.24
-    "wordPattern": "(-?\\d*\\.\\d\\w*)|(?<!\\S)--[\\d\\w_-]+|[\\d\\w_-]+",
+    "wordPattern": "(-?\\d*\\.\\d\\w*)|(?<!\\S)--[\\d\\w_]+|[\\d\\w_\\-\\.]+",
 }

@@ -85,7 +85,7 @@ export const kcScriptFunctionArgs = {
 	"Detach": [
 		"PARTICLE_EMITTER"
 	],
-	"ActivateSpecial": [
+	"Entity.ActivateSpecial": [
         "NONE",
 		"ENTITIES",
 		"TERRAIN",
