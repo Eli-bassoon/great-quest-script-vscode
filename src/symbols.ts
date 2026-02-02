@@ -24,13 +24,7 @@ export class GQSDocumentSymbolProvider implements vscode.DocumentSymbolProvider 
                 // Pop to stack if we are lower depth
                 if (depth <= stack.length) {
                     while (stack.length && depth <= stack.length) {
-                        const child = stack.pop() as vscode.DocumentSymbol;
-                        if (stack.length) {
-                            stack.at(-1)?.children.push(child);
-                        }
-                        else {
-                            symbols.push(child);
-                        }
+                        popStack(stack, symbols);
                     }
                 }
                 // Depth must either increase by exactly one or decrease by any amount
@@ -51,16 +45,20 @@ export class GQSDocumentSymbolProvider implements vscode.DocumentSymbolProvider 
 
         // EOF, pop all remaining ranges
         while (stack.length) {
-            const child = stack.pop() as vscode.DocumentSymbol;
-            if (stack.length) {
-                stack.at(-1)?.children.push(child);
-            }
-            else {
-                symbols.push(child);
-            }
+            popStack(stack, symbols);
         }
 
         return symbols;
+    }
+}
+
+function popStack(stack: vscode.DocumentSymbol[], symbols: vscode.DocumentSymbol[]) {
+    const child = stack.pop() as vscode.DocumentSymbol;
+    if (stack.length) {
+        stack.at(-1)?.children.push(child);
+    }
+    else {
+        symbols.push(child);
     }
 }
 
@@ -70,7 +68,7 @@ function getSymbolKind(depth: number, name: string): vscode.SymbolKind {
         case 1:
             return vscode.SymbolKind.Namespace;
 
-        // Second-level uses object symbol
+        // Second-level uses variable symbol
         case 2:
             return vscode.SymbolKind.Variable;
 
