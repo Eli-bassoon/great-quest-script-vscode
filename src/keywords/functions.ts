@@ -71,3 +71,6 @@ export const kcScriptFunctions: kcScriptFunction[] = [
 	{ name: "SetCameraPivot", script: true, sequence: false },
 	{ name: "SetCameraParam", script: true, sequence: false },
 ];
+
+export const kcScriptInSequenceFns: string[] = kcScriptFunctions.filter((f) => f.sequence).map((f) => f.name);
+export const kcScriptOutSequenceFns: string[] = kcScriptFunctions.filter((f) => f.script).map((f) => f.name);

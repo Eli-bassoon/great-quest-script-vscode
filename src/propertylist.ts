@@ -1,7 +1,7 @@
 import { keywords } from './keywords';
 import { doctext } from './doctext';
 
-interface GQSProperty {
+type GQSProperty = {
     name: string,
     options: string[],
 }
@@ -11,7 +11,7 @@ export class PropertyList {
     properties: GQSProperty[] = [];
     id: string = "";
     propertyNames: string[] = [];
-    propertyMap: Map<string, string[]> = new Map();
+    propertyMap: Map<string, GQSProperty> = new Map();
     keysDocs: object = {};
 
     constructor(id: string, parent: PropertyList | null, properties: GQSProperty[]) {
@@ -24,7 +24,7 @@ export class PropertyList {
 
         // Construct property map
         for (let keyval of this.properties) {
-            this.propertyMap.set(keyval.name, keyval.options);
+            this.propertyMap.set(keyval.name, keyval);
         }
 
         // Construct key documentation map
@@ -47,12 +47,12 @@ export class PropertyList {
 
     getEnumOptions(key: string): string[] {
         // Look in this map for key, then look in parents
-        var res: string[] | undefined = [];
+        var res: GQSProperty | undefined;
         var curr: PropertyList | null = this;
         while (curr) {
             res = curr.propertyMap.get(key);
             if (res !== undefined) {
-                return res;
+                return res.options;
             }
             curr = curr.parent;
         }
@@ -95,6 +95,9 @@ Entity
    ->UniqueItem
 
 */
+
+const boolOptions = ['true', 'false'];
+
 const entityPL = new PropertyList(
     "ENTITY",
     null,
@@ -103,7 +106,6 @@ const entityPL = new PropertyList(
         { name: 'defaultFlags', options: keywords.entityFlags },
         { name: 'boundingSpherePos', options: [] },
         { name: 'boundingSphereRadius', options: [] },
-        
     ]
 );
 
@@ -150,7 +152,7 @@ const actorBasePL = new PropertyList(
     "ACTOR_BASE",
     entityPL,
     [
-        { name: 'modelRef', options: [] },
+        { name: 'modelDesc', options: [] },
         { name: 'proxyDesc', options: [] },
         { name: 'skeleton', options: [] },
         { name: 'channelCount', options: [] },
@@ -187,21 +189,23 @@ const characterPL = new PropertyList(
         { name: 'attackGoalPercent', options: [] },
         { name: 'attackStrength', options: [] },
         { name: 'flyOrSwimSpeed', options: [] },
-        { name: 'avoidWater', options: ['true', 'false'] },
+        { name: 'avoidWater', options: boolOptions },
         { name: 'homePos', options: [] },
         { name: 'visionRange', options: [] },
         { name: 'visionFov', options: [] },
         { name: 'hearRange', options: [] },
+        { name: 'attackRange', options: [] },
         { name: 'meleeRange', options: [] },
         { name: 'missileRange', options: [] },
         { name: 'monsterGroup', options: [] },
         { name: 'fleePercent', options: [] },
         { name: 'tauntPercent', options: [] },
         { name: 'wanderGoalPercent', options: [] },
-        { name: 'preferRanged', options: [] },
+        { name: 'preferRanged', options: boolOptions },
+        { name: 'recoverySpeed', options: [] },
         { name: 'meleeAttackSpeed', options: [] },
         { name: 'rangedAttackSpeed', options: [] },
-        { name: 'preferRun', options: ['true', 'false'] },
+        { name: 'preferRun', options: boolOptions },
     ]
 );
 
@@ -255,25 +259,6 @@ const objKeyPL = new PropertyList(
     ]
 );
 
-// Collision Groups
-const collisionGroups = [
-    "TriangleMeshes",
-    "Player",
-    "NonHostileEntities",
-    "HostileEntities",
-    "PlayerKicks",
-    "PlayerPunches",
-    "Flyers",
-    "Swimmers",
-    "Sensors",
-    "Items",
-    "Terrain",
-    "Climbable",
-];
-for (var i of ['06', '07', '08', '09', '10', '13', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30']) { // Other collision groups
-    collisionGroups.push('UnnamedGroup' + i);
-}
-
 // Collision
 const collisionPL = new PropertyList(
     "COLLISION",
@@ -281,8 +266,8 @@ const collisionPL = new PropertyList(
     [
         { name: 'type', options: ['CAPSULE'] }, // TODO triangle meshes
         { name: 'reaction', options: ['SLIDE', 'PENETRATE', 'HALT'] },
-        { name: 'collisionGroups', options: collisionGroups },
-        { name: 'collideWith', options: collisionGroups },
+        { name: 'collisionGroups', options: keywords.collisionGroups },
+        { name: 'collideWith', options: keywords.collisionGroups },
         { name: 'radius', options: [] },
         { name: 'height', options: [] },
         { name: 'offset', options: [] },
@@ -305,9 +290,23 @@ const entityInstPL = new PropertyList(
     ]
 );
 
+// Launcher
+const launcherInstPL = new PropertyList(
+    "LAUNCHER",
+    null,
+    [
+        { name: 'projectileModel', options: [] },
+        { name: 'cruiseParticleEffect', options: [] },
+        { name: 'hitParticleEffect', options: [] },
+        { name: 'projectileLifeTime', options: [] },
+        { name: 'projectileSpeed', options: [] },
+    ]
+);
+
 export const propertyLists = {
     collision: collisionPL,
     entityInst: entityInstPL,
+    launcher: launcherInstPL,
     baseEntity: entityPL,
     entityDesc: {
         PARTICLE_EMITTER: particleEmitterPL,

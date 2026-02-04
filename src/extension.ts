@@ -67,8 +67,8 @@ export function activate(context: vscode.ExtensionContext) {
         hoverProvider,
     );
 
+    // Dialog decorations
     updateDialogDecorations();
-
     vscode.window.onDidChangeActiveTextEditor(updateDialogDecorations, null, context.subscriptions);
     vscode.workspace.onDidChangeTextDocument(updateDialogDecorations, null, context.subscriptions);
 }

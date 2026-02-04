@@ -75,3 +75,22 @@ export const kcScriptGeneralFlags = [
     "AsEntity",
     "ExternalEntity",
 ];
+
+// Collision Groups
+export const collisionGroups = [
+    "TriangleMeshes",
+    "Player",
+    "NonHostileEntities",
+    "HostileEntities",
+    "PlayerKicks",
+    "PlayerPunches",
+    "Flyers",
+    "Swimmers",
+    "Sensors",
+    "Items",
+    "Terrain",
+    "Climbable",
+];
+for (var i of ['06', '07', '08', '09', '10', '13', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30']) { // Other collision groups
+    collisionGroups.push('UnnamedGroup' + i);
+}

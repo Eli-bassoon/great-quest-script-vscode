@@ -87,6 +87,9 @@ export function getPropertyList(document: vscode.TextDocument, position: vscode.
         case "Entities":
             return propertyLists.entityInst;
 
+        case "Launchers":
+            return propertyLists.launcher;
+
         case "EntityDescriptions":
             // Get the type of entity to get its property list
             const entityDescType = getEntityDescType(document, position.line);

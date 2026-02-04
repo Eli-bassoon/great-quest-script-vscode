@@ -226,18 +226,17 @@ function getFunctionBodyCompletions(completions: vscode.CompletionItem[], ctx: G
 
     // If there are no arguments, we complete the function types
     if (args.length <= 1) {
-        for (let _function of keywords.kcScriptFunctions) {
-            // Complete contextually if we are in a script or action sequence
-            if ((_function.script && !inActionSequence) || (_function.sequence && inActionSequence)) {
-                const completion = new vscode.CompletionItem(_function.name, vscode.CompletionItemKind.Function);
-                // Activate autocomplete again if it's an enum type
-                if (isFunctionEnumType(_function.name)) {
-                    completion.insertText = _function.name + ' ';
-                    completion.command = { command: 'editor.action.triggerSuggest', title: 'Trigger Suggest' };
-                }
-                completion.documentation = new vscode.MarkdownString(doctext.kcScriptFunctionDocs[_function.name as keyof typeof doctext.kcScriptFunctionDocs]);
-                completions.push(completion);
+        let functionOptions = inActionSequence ? keywords.kcScriptInSequenceFns : keywords.kcScriptOutSequenceFns;
+
+        for (let _function of functionOptions) {
+            const completion = new vscode.CompletionItem(_function, vscode.CompletionItemKind.Function);
+            // Activate autocomplete again if it's an enum type
+            if (isFunctionEnumType(_function)) {
+                completion.insertText = _function + ' ';
+                completion.command = { command: 'editor.action.triggerSuggest', title: 'Trigger Suggest' };
             }
+            completion.documentation = new vscode.MarkdownString(doctext.kcScriptFunctionDocs[_function as keyof typeof doctext.kcScriptFunctionDocs]);
+            completions.push(completion);
         }
     }
     // If there are arguments, we complete the available constants and flags
