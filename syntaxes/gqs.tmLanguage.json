@@ -174,44 +174,8 @@
 			"match": "true|false"
 		},
 		"flags": {
-			"patterns": [
-				{
-					"name": "constant.language.flag.entity.gqs",
-					"match": "--(Hide(Shadow)?|UnusedBitFlag01|ForceStayActive|FaceTargetEntity|AllowWaypointInteraction|Active|EnableTerrainTracking|DisableAI|EnableCollision|EnablePhysics|CanTakeDamage|UnusedBitFlag11|UnusedBitFlag12|PlayerCanInteract|ResetEntity|UpdatesEnabled|PreventDeath)"
-				},
-				{
-					"name": "constant.language.flag.sequence.gqs",
-					"match": "--(IgnoreIfAlreadyActive|OpenBoneChannel)"
-				},
-				{
-					"name": "constant.language.flag.setanimation.gqs",
-					"match": "--(Repeat|Reverse|ReverseOnComplete|StartTime)"
-				},
-				{
-					"name": "constant.language.flag.damage.gqs",
-					"match": "--(Fire|Ice|Melee|Ranged|Fall|UnnamedDamageType\\d\\d?)"
-				},
-				{
-					"name": "constant.language.flag.models.gqs",
-					"match": "--CreateModelDesc"
-				},
-				{
-					"name": "constant.language.flag.textures.gqs",
-					"match": "--(Import|Resize|Delete)"
-				},
-				{
-					"name": "constant.language.flag.soundeffects.gqs",
-					"match": "--(Music|VoiceClip|Repeat|Priority|Volume|Pan|Pitch|SampleRate|BitDepth|ChannelCount|Embedded|Stream|Import)"
-				},
-				{
-					"name": "constant.language.flag.alarm.gqs",
-					"match": "--Repeat"
-				},
-				{
-					"name": "constant.language.flag.general.gqs",
-					"match": "--(AsEntity|ExternalEntity)"
-				}
-			]
+			"name": "constant.language.flag.gqs",
+			"match": "--[a-zA-Z]\\w*"
 		},
 		"comments": {
 			"name": "comment.line.gqs",
