@@ -206,6 +206,18 @@ const characterPL = new PropertyList(
         { name: 'meleeAttackSpeed', options: [] },
         { name: 'rangedAttackSpeed', options: [] },
         { name: 'preferRun', options: boolOptions },
+        { name: 'protectLike', options: [] },
+        { name: 'homeRange', options: [] },
+        { name: 'activationRange', options: [] },
+        { name: 'climbHeight', options: [] },
+        { name: 'fallHeight', options: [] },
+        { name: 'aiRangeDamage', options: [] },
+        { name: 'closeDistance', options: [] },
+        { name: 'defendRange', options: [] },
+        { name: 'dodgePercent', options: [] },
+        { name: 'guardHome', options: [] },
+        { name: 'huntRange', options: [] },
+        { name: 'sleepGoalPercent', options: [] },
     ]
 );
 

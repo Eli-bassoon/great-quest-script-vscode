@@ -44,6 +44,9 @@ export const kcScriptFunctionFlags = {
         "Repeat",
     ],
 };
+for (var i of ['02', '05', '06', '07', '08', '09', '10', '11', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31']) { // Other damage types
+    kcScriptFunctionFlags.TakeDamage.push('UnnamedDamageType' + i);
+}
 
 export const gqsSectionFlags = {
     "Models": [
@@ -68,6 +71,7 @@ export const gqsSectionFlags = {
         "Embedded",
         "Stream",
         "Import",
+        "Delete",
     ],
 };
 
@@ -76,8 +80,13 @@ export const kcScriptGeneralFlags = [
     "ExternalEntity",
 ];
 
+export const kcScriptCauseFlags = [
+    "AllowUnused",
+];
+
 // Collision Groups
 export const collisionGroups = [
+    "None",
     "TriangleMeshes",
     "Player",
     "NonHostileEntities",

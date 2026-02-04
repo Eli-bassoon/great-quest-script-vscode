@@ -214,6 +214,11 @@ function getFunctionCauseCompletions(completions: vscode.CompletionItem[], ctx: 
                 completions.push(completion);
             }
         }
+
+        // Autocomplete flags if we've done all the arguments
+        if ((args.length > 2) || ((args.length > 3) && (cause === 'OnDialog'))) {
+            provideFlagCompletions(completions, ctx.flagWordRange, keywords.kcScriptCauseFlags);
+        }
     }
 }
 
