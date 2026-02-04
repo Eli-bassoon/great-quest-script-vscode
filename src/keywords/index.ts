@@ -1,6 +1,6 @@
 import { gqsSections, kcScriptSections } from './sections';
 import { kcScriptCauses, kcScriptFunctions, kcScriptInSequenceFns, kcScriptOutSequenceFns } from './functions';
-import { kcScriptCauseArgs, kcScriptFunctionArgs, kcScriptTriggerEventArgs } from './arguments';
+import { kcScriptCauseArgs, kcScriptFunctionArgs, kcScriptTriggerEventArgs, kcScriptItems } from './arguments';
 import { entityFlags, kcScriptFunctionFlags, gqsSectionFlags, kcScriptGeneralFlags, kcScriptCauseFlags, collisionGroups } from './flags';
 
 export const keywords = {
@@ -13,6 +13,7 @@ export const keywords = {
     kcScriptCauseArgs,
     kcScriptFunctionArgs,
     kcScriptTriggerEventArgs,
+    kcScriptItems,
     entityFlags,
     kcScriptFunctionFlags,
     gqsSectionFlags,
