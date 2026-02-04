@@ -61,7 +61,7 @@ export class GQSCompletionItemProvider implements vscode.CompletionItemProvider 
         // kcScript
         if ((ctx.sections.at(-1) === 'Function') || ((ctx.topSection === 'Sequences') && (ctx.sections.length === 3))) {
             // Inside cause
-            const causeMatch = ctx.lineText.match(/^\s*cause\s*=/); // Split off the "cause=" part while accounting for spaces
+            const causeMatch = ctx.lineText.match(/^\s*cause\s*=\s*/); // Split off the "cause=" part while accounting for spaces
             if (causeMatch) {
                 getFunctionCauseCompletions(completions, ctx, ctx.lineUntilCursor.slice(causeMatch[0].length).trimStart());
             }
@@ -225,10 +225,24 @@ function getFunctionCauseCompletions(completions: vscode.CompletionItem[], ctx: 
 // Get completions when we are in the body of a function
 function getFunctionBodyCompletions(completions: vscode.CompletionItem[], ctx: GQSCompletionContext) {
     const inActionSequence = ctx.topSection === 'Sequences';
-
+    
+    // See if we should complete "hash="
+    if (inActionSequence) {
+        // If we are in a sequence and the line start with "hash=" then we don't autocomplete anything
+        if (ctx.lineUntilCursor.match(/^\s*hash\s*=\s*/)) {
+            return;
+        }
+        else {
+            tryCompleteFunctionCauseOrHash("hash", completions, ctx);
+        }
+    }
+    else {
+        tryCompleteFunctionCauseOrHash("cause", completions, ctx);
+    }
+    
     // Split into arguments
     const args = ctx.lineUntilCursor.split(/ +/);
-
+    
     // If there are no arguments, we complete the function types
     if (args.length <= 1) {
         let functionOptions = inActionSequence ? keywords.kcScriptInSequenceFns : keywords.kcScriptOutSequenceFns;
@@ -286,6 +300,20 @@ function getFunctionBodyCompletions(completions: vscode.CompletionItem[], ctx: G
     
             // General flags for any function
             provideFlagCompletions(completions, ctx.flagWordRange, keywords.kcScriptGeneralFlags);
+        }
+    }
+}
+
+function tryCompleteFunctionCauseOrHash(key: string, completions: vscode.CompletionItem[], ctx: GQSCompletionContext) {
+    if (ctx.lineUntilCursor.startsWith(key[0]) || (ctx.lineUntilCursor.trim() === "")) {
+        // Go up until we find a non-whitespace line
+        for (var lineIdx = ctx.position.line - 1; ctx.document.lineAt(lineIdx).isEmptyOrWhitespace; --lineIdx) {}
+        // If it is a section header, autocomplete key= as the preferred selection
+        if (ctx.document.lineAt(lineIdx).text.startsWith('[')) {
+            const completion = new vscode.CompletionItem(key + "=", vscode.CompletionItemKind.Constant);
+            completion.preselect = true;
+            completion.sortText = "!!" + key + "=";
+            completions.push(completion);
         }
     }
 }
