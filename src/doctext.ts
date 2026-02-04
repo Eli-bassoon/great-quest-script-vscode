@@ -150,12 +150,12 @@ const entityDescriptionDocs = {
         "height": "The height between the top and bottom hemispheres.",
         "offset": "How far up from the entity's Y position should the pill be offset to."
     },
-    "ENTITIES": {
+    "ENTITY_INSTANCE": {
         "description": "The name of the description (template) describing what kind of entity this is.",
         "priority": "Controls the priority in which actions from different entities are handled. 1 is fine in most cases.",
         "targetEntity": "The entity to target. If unsure, use FrogInst001.",
         "flags": "For a full list of flags, refer to the GQS scripting documentation.",
-        "billboardAxis": "For a full list of flags, refer to the GQS scripting documentation.",
+        "billboardAxis": "The axis to rotate around.",
         "position": "The position of the entity",
         "rotation": "The rotation of the entity in degrees",
         "scale": "The scale of the entity relative to the base model"
