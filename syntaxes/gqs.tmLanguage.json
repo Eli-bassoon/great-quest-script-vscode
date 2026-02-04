@@ -33,7 +33,7 @@
 			"patterns": [
 				{
 					"name": "variable.other.gqs",
-					"match": "[a-zA-Z_/\\\\][\\w\\-\\./\\\\]*"
+					"match": "[a-zA-Z_/\\.\\\\][\\w\\-\\./\\\\]*"
 				},
 				{
 					"name": "variable.other.seqs.gqs",
