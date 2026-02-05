@@ -15,14 +15,25 @@ export class GQSHoverProvider implements vscode.HoverProvider {
 
         // Existing function
         if (hoverWord in doctext.kcScriptFunctionDocs) {
-            return new vscode.Hover(new vscode.MarkdownString(doctext.kcScriptFunctionDocs[hoverWord as keyof typeof doctext.kcScriptFunctionDocs]));
+            const functionDocs = doctext.kcScriptFunctionDocs[hoverWord as keyof typeof doctext.kcScriptFunctionDocs];
+            const docs = [
+                new vscode.MarkdownString().appendCodeblock(functionDocs[0], 'gqs'),
+                new vscode.MarkdownString(functionDocs[1])
+            ];
+            return new vscode.Hover(docs);
         }
         
         // Check for property
         let propertyList = getPropertyList(document, position);
         if (propertyList) {
-            const docs = propertyList.getPropertyDocs(hoverWord);
-            if (docs) return new vscode.Hover(new vscode.MarkdownString(docs));
+            const propertyDocs = propertyList.getPropertyDocs(hoverWord);
+            if (propertyDocs){
+                const docs = [
+                    new vscode.MarkdownString().appendCodeblock(hoverWord, 'gqs'),
+                    new vscode.MarkdownString(propertyDocs)
+                ];
+                return new vscode.Hover(docs);
+            }
         }
 
         return null;

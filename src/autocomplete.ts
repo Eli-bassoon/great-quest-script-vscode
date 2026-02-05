@@ -216,7 +216,9 @@ function getFunctionCauseCompletions(completions: vscode.CompletionItem[], ctx: 
             const completion = new vscode.CompletionItem(s, vscode.CompletionItemKind.Function);
             // Activate autocomplete again if it's an enum type
             tryAddSpaceAfterAutocomplete(completion, ctx, s in keywords.kcScriptCauseArgs);
-            completion.documentation = new vscode.MarkdownString(doctext.kcScriptFunctionDocs[s as keyof typeof doctext.kcScriptFunctionDocs]);
+            const docs = doctext.kcScriptFunctionDocs[s as keyof typeof doctext.kcScriptFunctionDocs];
+            completion.detail = docs[0];
+            completion.documentation = new vscode.MarkdownString(docs[1]);
             completions.push(completion);
         }
     }
@@ -278,7 +280,9 @@ function getFunctionBodyCompletions(completions: vscode.CompletionItem[], ctx: G
             if (isFunctionEnumType(_function)) {
                 tryAddSpaceAfterAutocomplete(completion, ctx);
             }
-            completion.documentation = new vscode.MarkdownString(doctext.kcScriptFunctionDocs[_function as keyof typeof doctext.kcScriptFunctionDocs]);
+            const docs = doctext.kcScriptFunctionDocs[_function as keyof typeof doctext.kcScriptFunctionDocs];
+            completion.detail = docs[0];
+            completion.documentation = new vscode.MarkdownString(docs[1]);
             completions.push(completion);
         }
     }
@@ -352,7 +356,10 @@ function getDescriptionCompletions(completions: vscode.CompletionItem[], ctx: GQ
             const completion = new vscode.CompletionItem(s + '=', vscode.CompletionItemKind.Field);
             completion.command = { command: 'editor.action.triggerSuggest', title: 'Trigger Suggest' };
             const docs = propertyList.getPropertyDocs(s);
-            if (docs) completion.documentation = new vscode.MarkdownString(docs);
+            if (docs) {
+                completion.detail = s;
+                completion.documentation = new vscode.MarkdownString(docs);
+            }
             completions.push(completion);
         }
     }
