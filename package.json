@@ -47,10 +47,15 @@
           "default": true,
           "description": "Whether to show dialog inline when it is used by ShowDialog and OnDialogAdvance"
         },
-        "greatQuestScript.gotoNextLineInSectionHeaders": {
+        "greatQuestScript.goToNextLineInSectionHeaders": {
           "type": "boolean",
           "default": true,
           "description": "Whether to move the cursor to the next line when autocompleting section headers."
+        },
+        "greatQuestScript.addSpaceAfterAutocomplete": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to add a space after accepting certain autocompleted suggestions."
         }
       }
     },

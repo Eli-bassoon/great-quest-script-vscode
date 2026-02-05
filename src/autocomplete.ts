@@ -16,6 +16,7 @@ class GQSCompletionContext {
     lineText: string;
     lineUntilCursor: string;
     flagWordRange: vscode.Range | undefined;
+    spaceAfterAutocomplete: boolean;
 
     constructor(document: vscode.TextDocument, position: vscode.Position) {
         this.document = document;
@@ -28,6 +29,9 @@ class GQSCompletionContext {
 
         // If we've typed one or more hyphens, we need to replace them as well when doing the autocomplete
         this.flagWordRange = document.getWordRangeAtPosition(position, /--?[\w\d]*/);
+
+        // Whether we should add spaces after autocomplete
+        this.spaceAfterAutocomplete = vscode.workspace.getConfiguration("greatQuestScript").get("addSpaceAfterAutocomplete") !== false;
     }
 
     get topSection(): string | undefined {
@@ -112,18 +116,31 @@ function getSectionCompletions(completions: vscode.CompletionItem[], ctx: GQSCom
     if (bracketsTyped === 1) {
         // Register top-level GQS sections
         for (let s of keywords.gqsSections) {
-            const completion = getSingleSectionCompletion(s, 1, wordRange);
+            const completion = getSingleSectionCompletion(s, 1, wordRange, false);
             completions.push(completion);
         }
     }
 
-    // Register custom sections so we go to the next line when tab completing
-    if ((bracketsTyped === 2) // Always at level 2
-        || ((bracketsTyped === 3) && (ctx.topSection === "Sequences")) // At level 3 only when we are in a sequence
-    ) {
+    // Register custom sections so we go to the next line when tab completing, always at depth 2
+    if (bracketsTyped === 2) {
         const sectionText = ctx.lineText.match(insideBracketRegExp);
         if (sectionText) {
-            const completion = getSingleSectionCompletion(sectionText[1], bracketsTyped, wordRange);
+            const completion = getSingleSectionCompletion(sectionText[1], bracketsTyped, wordRange, false);
+            completions.push(completion);
+        }
+    }
+
+    // Register custom sequence section at depth 3
+    if ((bracketsTyped === 3) && (ctx.topSection === "Sequences")) {
+        const sectionText = ctx.lineText.match(insideBracketRegExp);
+        if (sectionText) {
+            // If we are in a sequence, add "hash=" after
+            let afterCompletionFill = "";
+            if (ctx.topSection === "Sequences") {
+                afterCompletionFill = "hash=";
+            }
+
+            const completion = getSingleSectionCompletion(sectionText[1], bracketsTyped, wordRange, false, afterCompletionFill);
             completions.push(completion);
         }
     }
@@ -145,7 +162,7 @@ function getSectionCompletions(completions: vscode.CompletionItem[], ctx: GQSCom
 
     // Actually perform the function completion
     if (completingFunction) {
-        const completion = getSingleSectionCompletion('Function', functionBrackets, wordRange, 'cause=');
+        const completion = getSingleSectionCompletion('Function', functionBrackets, wordRange, true, 'cause=');
         // Make this the preferred selection by sorting it early
         completion.sortText = '!!Function';
         completion.preselect = true;
@@ -154,20 +171,29 @@ function getSectionCompletions(completions: vscode.CompletionItem[], ctx: GQSCom
 
     // Autocomplete [[[Script]]] when we are in [Entities] section
     if ((ctx.topSection === 'Entities') && (ctx.sections.length === 2)) {
-        const completion = getSingleSectionCompletion('Script', 3, wordRange);
+        const completion = getSingleSectionCompletion('Script', 3, wordRange, false);
         completions.push(completion);
     }
 }
 
-function getSingleSectionCompletion(section: string, brackets: number, wordRange: vscode.Range | undefined, afterCompletionFill: string = ""): vscode.CompletionItem {
+function getSingleSectionCompletion(
+    section: string,
+    brackets: number,
+    wordRange: vscode.Range | undefined,
+    activateAutocompleteAfter: boolean,
+    afterCompletionFill: string = "",
+): vscode.CompletionItem {
     const LB = '['.repeat(brackets);
     const RB = ']'.repeat(brackets);
 
     const completion = new vscode.CompletionItem(section, vscode.CompletionItemKind.EnumMember);
     completion.filterText = LB + section + RB;
     // Replace the autocomplete, then move the cursor to the next line
-    if (vscode.workspace.getConfiguration("greatQuestScript").get("gotoNextLineInSectionHeaders")) {
+    if (vscode.workspace.getConfiguration("greatQuestScript").get("goToNextLineInSectionHeaders")) {
         completion.insertText = new vscode.SnippetString(LB + section + RB + '\n' + afterCompletionFill + '$0');
+        if (activateAutocompleteAfter) {
+            completion.command = { command: 'editor.action.triggerSuggest', title: 'Trigger Suggest' };
+        }
     }
     else {
         completion.insertText = LB + section + RB;
@@ -185,11 +211,8 @@ function getFunctionCauseCompletions(completions: vscode.CompletionItem[], ctx: 
     if (args.length <= 1) {
         for (let s of keywords.kcScriptCauses) {
             const completion = new vscode.CompletionItem(s, vscode.CompletionItemKind.Function);
-            completion.insertText = s + ' ';
             // Activate autocomplete again if it's an enum type
-            if (s in keywords.kcScriptCauseArgs) {
-                completion.command = { command: 'editor.action.triggerSuggest', title: 'Trigger Suggest' };
-            }
+            tryAddSpaceAfterAutocomplete(completion, ctx, s in keywords.kcScriptCauseArgs);
             completion.documentation = new vscode.MarkdownString(doctext.kcScriptFunctionDocs[s as keyof typeof doctext.kcScriptFunctionDocs]);
             completions.push(completion);
         }
@@ -208,8 +231,7 @@ function getFunctionCauseCompletions(completions: vscode.CompletionItem[], ctx: 
                 const completion = new vscode.CompletionItem(s, vscode.CompletionItemKind.Constant);
                 // OnDialog should activate autocomplete again for the available dialogs
                 if (cause === "OnDialog") {
-                    completion.insertText = s + ' ';
-                    completion.command = { command: 'editor.action.triggerSuggest', title: 'Trigger Suggest' };
+                    tryAddSpaceAfterAutocomplete(completion, ctx);
                 }
                 completions.push(completion);
             }
@@ -225,7 +247,7 @@ function getFunctionCauseCompletions(completions: vscode.CompletionItem[], ctx: 
 // Get completions when we are in the body of a function
 function getFunctionBodyCompletions(completions: vscode.CompletionItem[], ctx: GQSCompletionContext) {
     const inActionSequence = ctx.topSection === 'Sequences';
-    
+
     // See if we should complete "hash="
     if (inActionSequence) {
         // If we are in a sequence and the line start with "hash=" then we don't autocomplete anything
@@ -239,10 +261,10 @@ function getFunctionBodyCompletions(completions: vscode.CompletionItem[], ctx: G
     else {
         tryCompleteFunctionCauseOrHash("cause", completions, ctx);
     }
-    
+
     // Split into arguments
     const args = ctx.lineUntilCursor.split(/ +/);
-    
+
     // If there are no arguments, we complete the function types
     if (args.length <= 1) {
         let functionOptions = inActionSequence ? keywords.kcScriptInSequenceFns : keywords.kcScriptOutSequenceFns;
@@ -251,8 +273,7 @@ function getFunctionBodyCompletions(completions: vscode.CompletionItem[], ctx: G
             const completion = new vscode.CompletionItem(_function, vscode.CompletionItemKind.Function);
             // Activate autocomplete again if it's an enum type
             if (isFunctionEnumType(_function)) {
-                completion.insertText = _function + ' ';
-                completion.command = { command: 'editor.action.triggerSuggest', title: 'Trigger Suggest' };
+                tryAddSpaceAfterAutocomplete(completion, ctx);
             }
             completion.documentation = new vscode.MarkdownString(doctext.kcScriptFunctionDocs[_function as keyof typeof doctext.kcScriptFunctionDocs]);
             completions.push(completion);
@@ -291,13 +312,12 @@ function getFunctionBodyCompletions(completions: vscode.CompletionItem[], ctx: G
         // Don't provide flags if we're an enum function and haven't given an enum yet
         // However, the Set/Clear/Init Flags overrides this and should still complete
         if (["SetFlags", "ClearFlags", "InitFlags"].includes(func) ||
-            !((args.length === 2) && isFunctionEnumType(func)))
-        {
+            !((args.length === 2) && isFunctionEnumType(func))) {
             // Function-specific flags
             if (func in keywords.kcScriptFunctionFlags) {
                 provideFlagCompletions(completions, ctx.flagWordRange, keywords.kcScriptFunctionFlags[func as keyof typeof keywords.kcScriptFunctionFlags]);
             }
-    
+
             // General flags for any function
             provideFlagCompletions(completions, ctx.flagWordRange, keywords.kcScriptGeneralFlags);
         }
@@ -307,7 +327,7 @@ function getFunctionBodyCompletions(completions: vscode.CompletionItem[], ctx: G
 function tryCompleteFunctionCauseOrHash(key: string, completions: vscode.CompletionItem[], ctx: GQSCompletionContext) {
     if (ctx.lineUntilCursor.startsWith(key[0]) || (ctx.lineUntilCursor.trim() === "")) {
         // Go up until we find a non-whitespace line
-        for (var lineIdx = ctx.position.line - 1; ctx.document.lineAt(lineIdx).isEmptyOrWhitespace; --lineIdx) {}
+        for (var lineIdx = ctx.position.line - 1; ctx.document.lineAt(lineIdx).isEmptyOrWhitespace; --lineIdx) { }
         // If it is a section header, autocomplete key= as the preferred selection
         if (ctx.document.lineAt(lineIdx).text.startsWith('[')) {
             const completion = new vscode.CompletionItem(key + "=", vscode.CompletionItemKind.Constant);
@@ -369,4 +389,14 @@ function isFunctionEnumType(_function: string): boolean {
             "TriggerEvent", // Event strings
             "ShowDialog" // Dialogs
         ].includes(_function));
+}
+
+// Modifies a command to add a space after autocomplete if the setting is set
+function tryAddSpaceAfterAutocomplete(completion: vscode.CompletionItem, ctx: GQSCompletionContext, autocompleteAgain: boolean = true) {
+    if (ctx.spaceAfterAutocomplete) {
+        completion.insertText = completion.label + ' ';
+        if (autocompleteAgain) {
+            completion.command = { command: 'editor.action.triggerSuggest', title: 'Trigger Suggest' };
+        }
+    }
 }
