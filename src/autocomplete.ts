@@ -7,6 +7,7 @@ import * as vscode from 'vscode';
 import { keywords, kcScriptFunction } from './keywords';
 import { propertyLists } from './propertylist';
 import { getSectionNesting, getEntityDescType, getPropertyList, getDialogDefinitions } from './parsing';
+import { makeRandomHash } from './codeactions';
 import { doctext } from './doctext';
 
 class GQSCompletionContext {
@@ -135,9 +136,11 @@ function getSectionCompletions(completions: vscode.CompletionItem[], ctx: GQSCom
         const sectionText = ctx.lineText.match(insideBracketRegExp);
         if (sectionText) {
             // If we are in a sequence, add "hash=" after
-            let afterCompletionFill = "";
-            if (ctx.topSection === "Sequences") {
-                afterCompletionFill = "hash=";
+            let afterCompletionFill = "hash=";
+
+            // If we are configured to auto-generate a hash, append a hash to the end of the line and place the cursor below
+            if (vscode.workspace.getConfiguration("greatQuestScript").get("autogenerateHash") !== false) {
+                afterCompletionFill += makeRandomHash() + ' # Automatically generated hash. Ensure this does not collide with anything\n';
             }
 
             const completion = getSingleSectionCompletion(sectionText[1], bracketsTyped, wordRange, false, afterCompletionFill);

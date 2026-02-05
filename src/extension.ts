@@ -8,6 +8,7 @@ import { GQSCompletionItemProvider } from './autocomplete';
 import { GQSFoldingRangeProvider } from './folding';
 import { GQSDocumentSymbolProvider } from './symbols';
 import { GQSHoverProvider } from './hover';
+import { GQSCodeActionProvider } from './codeactions';
 import { updateDialogDecorations, decorationType as dialogDecorationType } from './dialoghints';
 
 const LANGUAGE = 'gqs';
@@ -58,6 +59,12 @@ export function activate(context: vscode.ExtensionContext) {
         new GQSHoverProvider(),
     );
 
+    // Registers code actions
+    const codeActionProvider = vscode.languages.registerCodeActionsProvider(
+        LANGUAGE,
+        new GQSCodeActionProvider(),
+    );
+
     context.subscriptions.push(
         dialogDecorationType,
         debughelp,
@@ -65,6 +72,7 @@ export function activate(context: vscode.ExtensionContext) {
         foldingProvider,
         symbolProvider,
         hoverProvider,
+        codeActionProvider,
     );
 
     // Dialog decorations

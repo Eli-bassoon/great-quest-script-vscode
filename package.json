@@ -56,6 +56,11 @@
           "type": "boolean",
           "default": true,
           "description": "Whether to add a space after accepting certain autocompleted suggestions."
+        },
+        "greatQuestScript.autogenerateHash": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to automatically generate a random hash when autocompleting a sequence section header."
         }
       }
     },
