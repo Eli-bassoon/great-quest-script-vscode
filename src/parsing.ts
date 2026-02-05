@@ -16,10 +16,9 @@ export function getSectionNesting(document: vscode.TextDocument, line: number): 
     let currNesting = Number.MAX_SAFE_INTEGER;
     for (; line >= 0; --line) {
         // Section
-        // TODO: Can we have whitespace starting a section?
         // TODO: Check for balanced brackets
-        let text = document.lineAt(line).text;
-        if (text && (text.charAt(0) === '[')) {
+        let text = document.lineAt(line).text.trim();
+        if (text && text.startsWith('[')) {
             // Get section match
             let match = text.match(/\[+.+?\]+/);
             if (match === null) continue;
@@ -49,17 +48,13 @@ export function getEntityDescType(document: vscode.TextDocument, startLine: numb
     // Iterate forwards and backwards until we hit the section start or we hit the type= section
     for (let direction of [-1, +1]) {
         for (let line = startLine; 0 <= line && line < document.lineCount; line += direction) {
-            let text = document.lineAt(line).text;
+            let text = document.lineAt(line).text.trim();
             if (!text) continue; // Skip when empty
-            if (text.charAt(0) === '[') break; // Stop when we find a section - TODO: Can we have whitespace starting a section?
+            if (text.startsWith('[')) break; // Stop when we find a section
     
-            if (text.startsWith('type=')) {
-                // Extract the type
-                text = text.slice('type='.length);
-                const match = text.match(/[\w_]+/);
-                if (match !== null) {
-                    return match[0];
-                }
+            const match = text.match(/^\s*type\s*=\s*(\w+)/);
+            if (match) {
+                return match[1];
             }
         }
     }
@@ -110,7 +105,7 @@ export function getDialogDefinitions(document: vscode.TextDocument): Map<string,
     const definitions = new Map<string, string>();
 
     for (var line = 0; line < document.lineCount; ++line) {
-        if (document.lineAt(line).text.startsWith('[Dialog]')) {
+        if (document.lineAt(line).text.trim().startsWith('[Dialog]')) {
             ++line;
             break;
         }
@@ -125,9 +120,9 @@ export function getDialogDefinitions(document: vscode.TextDocument): Map<string,
         // If we hit a new section, stop searching
         const lineText = document.lineAt(line);
         if (lineText.isEmptyOrWhitespace) continue; // Skip empty lines
-        if (lineText.text.startsWith('[')) return definitions; // Stop when we reach a new section
+        if (lineText.text.trim().startsWith('[')) return definitions; // Stop when we reach a new section
 
-        const match = lineText.text.match(/^(?<name>\w+)\s*=\s*"(?<dialog>(?:[^"\\]|\\.)*)"/); // Match `DIALOG_NAME="Some string"`, checking for escaped double quotes
+        const match = lineText.text.match(/^\s*(?<name>\w+)\s*=\s*"(?<dialog>(?:[^"\\]|\\.)*)"/); // Match DIALOG_NAME="Some string", checking for escaped double quotes
         if (match && match.groups) {
             definitions.set(match.groups.name, match.groups.dialog);
         }

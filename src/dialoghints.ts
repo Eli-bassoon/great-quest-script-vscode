@@ -33,7 +33,7 @@ export function updateDialogDecorations() {
     for (let line = 0; line < editor.document.lineCount; ++line) {
         const lineText = editor.document.lineAt(line).text;
         // See whether we referenced the dialog
-        if (lineText.startsWith('ShowDialog') || lineText.match(/^cause\s*=\s*OnDialog/)) {
+        if (lineText.startsWith('ShowDialog') || lineText.match(/^\s*cause\s*=\s*OnDialog/)) {
             // Try to get dialog inside first string, which will be first match of string
             const stringMatches = lineText.match(/"(.*?)"/);
             if (!stringMatches) continue;

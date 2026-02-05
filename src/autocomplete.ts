@@ -332,7 +332,7 @@ function tryCompleteFunctionCauseOrHash(key: string, completions: vscode.Complet
         // Go up until we find a non-whitespace line
         for (var lineIdx = ctx.position.line - 1; ctx.document.lineAt(lineIdx).isEmptyOrWhitespace; --lineIdx) { }
         // If it is a section header, autocomplete key= as the preferred selection
-        if (ctx.document.lineAt(lineIdx).text.startsWith('[')) {
+        if (ctx.document.lineAt(lineIdx).text.trim().startsWith('[')) {
             const completion = new vscode.CompletionItem(key + "=", vscode.CompletionItemKind.Constant);
             completion.preselect = true;
             completion.sortText = "!!" + key + "=";

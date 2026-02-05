@@ -10,8 +10,8 @@
 		{ "include": "#keywords" },
 		{ "include": "#flags" },
 		{ "include": "#constants" },
-		{ "include": "#identifier" },
-		{ "include": "#section" }
+		{ "include": "#section" },
+		{ "include": "#identifier" }
 	],
 	"repository": {
 		"strings": {
@@ -77,11 +77,11 @@
 			"patterns": [
 				{
 					"name": "entity.name.section.language.gqs",
-					"match": "\\[(Models|Textures|SoundEffects|CopyResources|DeleteResources|Animations|Sequences|Dialog|Collision|Launchers|EntityDescriptions|Entities|Scripts|Include|Script|Function)\\]"
+					"match": "^\\s*\\[(Models|Textures|SoundEffects|CopyResources|DeleteResources|Animations|Sequences|Dialog|Collision|Launchers|EntityDescriptions|Entities|Scripts|Include|Script|Function)\\]"
 				},
 				{
 					"name": "entity.name.section.other.gqs",
-					"match": "\\[+.+?\\]+"
+					"match": "^\\s*\\[+.+?\\]+"
 				}
 			]
 		},
