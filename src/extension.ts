@@ -1,9 +1,5 @@
 import * as vscode from 'vscode';
 
-import { keywords, kcScriptFunction } from './keywords';
-import { propertyLists } from './propertylist';
-import { getSectionNesting, getEntityDescType } from './parsing';
-
 import { GQSCompletionItemProvider } from './autocomplete';
 import { GQSFoldingRangeProvider } from './folding';
 import { GQSDocumentSymbolProvider } from './symbols';
@@ -14,25 +10,6 @@ import { updateDialogDecorations, decorationType as dialogDecorationType } from 
 const LANGUAGE = 'gqs';
 
 export function activate(context: vscode.ExtensionContext) {
-
-    // Use the console to output diagnostic information (console.log) and errors (console.error)
-    // This line of code will only be executed once when your extension is activated
-    console.log('Congratulations, your extension "great-quest-script" is now active!');
-
-    const debughelp = vscode.commands.registerCommand('great-quest-script.debughelp', () => {
-        const editor = vscode.window.activeTextEditor;
-        if (!editor) { return; }
-
-        const cursorPos = editor.selection.active;
-        const wordRange = editor.document.getWordRangeAtPosition(cursorPos);
-        if (wordRange) {
-            const word = editor.document.getText(wordRange);
-            console.log(word);
-        }
-
-        const sections = getSectionNesting(editor.document, editor.selection.active.line);
-        console.log(sections);
-    });
 
     // Registers autocomplete
     const autocompleteProvider = vscode.languages.registerCompletionItemProvider(
@@ -67,7 +44,6 @@ export function activate(context: vscode.ExtensionContext) {
 
     context.subscriptions.push(
         dialogDecorationType,
-        debughelp,
         autocompleteProvider,
         foldingProvider,
         symbolProvider,

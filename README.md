@@ -1,71 +1,44 @@
-# great-quest-script README
+# Great Quest Script
 
-This is the README for your extension "great-quest-script". After writing up a brief description, we recommend including the following sections.
+Language support for Great Quest Script (`.gqs`) files, used by [FrogLord](https://github.com/Kneesnap/FrogLord) to modify *Frogger: The Great Quest*.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
 
-For example if there is an image subfolder under your extension project workspace:
 
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
-
-## Requirements
-
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+* Syntax highlighting
+* Autocomplete
+* Folding sections and sticky headers so you can remember where you are
+* Breadcrumbs for quick navigation
+* Dialog hints: When using `OnDialog` and `ShowDialog`, see what the actual dialog is without having to scroll up to the dialog section. No more need to write comments on each line describing the dialog.
+* Hover to see documentation
+* Automatic generation of sequence hashes
 
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+* `greatQuestScript.inlineDialog`: Toggles whether to show dialog inline.
+* `greatQuestScript.goToNextLineInSectionHeaders`: Whether to move the cursor to the next line when autocompleting section headers.
+* `greatQuestScript.addSpaceAfterAutocomplete`: Whether to add a space after accepting certain autocompleted suggestions.
+* `greatQuestScript.autogenerateHash`: Whether to automatically generate a random hash when autocompleting a sequence section header. This has no effect if `goToNextlineInSectionHeaders` is turned off.
 
-For example:
+## Installation
 
-This extension contributes the following settings:
+1. First, download the latest version of the extension from https://github.com/Eli-bassoon/great-quest-script-vscode/releases as a `.vsix` file
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+2. Click the extension button on the sidebar, then the three dots menu, then "Install from VSIX..."
 
-## Known Issues
+   ![installation](./images/installation.png)
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+3. Select the `.vsix` file you just downloaded.
+
+Alternatively, install it from the command line using the following command, replacing `<VERSION>` with the actual version you downloaded.
+
+```bash
+code --install-extension great-quest-script-<VERSION>.vsix
+```
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
+### 0.0.1
 
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+Initial release with syntax highlighting, autocomplete, folding, breadcrumbs, dialog hints, hover docs, and automatic hash generation.

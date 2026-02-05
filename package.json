@@ -1,7 +1,8 @@
 {
   "name": "great-quest-script",
   "displayName": "Great Quest Script",
-  "description": "Language support for Great Quest Script and FrogLord",
+  "publisher": "eli-bassoon",
+  "description": "Language support for Great Quest Script",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.108.1"
@@ -9,15 +10,19 @@
   "categories": [
     "Programming Languages"
   ],
+  "keywords": [
+    "Frogger", "Great Quest", "FrogLord", "Modding"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Eli-bassoon/great-quest-script-vscode"
+  },
+  "homepage": "https://github.com/Eli-bassoon/great-quest-script-vscode/blob/main/README.md",
+  "license": "SEE LICENSE IN LICENSE.txt",
+  "icon": "images/icon.webp",
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
-    "commands": [
-      {
-        "command": "great-quest-script.debughelp",
-        "title": "GQS Debug"
-      }
-    ],
     "languages": [
       {
         "id": "gqs",
