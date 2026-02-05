@@ -97,7 +97,7 @@ export class GQSCompletionItemProvider implements vscode.CompletionItemProvider 
 // Helper function that adds flags to the autocomplete list
 function provideFlagCompletions(completions: vscode.CompletionItem[], flagWordRange: vscode.Range | undefined, availableFlags: string[]) {
     for (let s of availableFlags) {
-        const completion = new vscode.CompletionItem('--' + s, vscode.CompletionItemKind.Constant);
+        const completion = new vscode.CompletionItem('--' + s, vscode.CompletionItemKind.EnumMember);
         completion.range = flagWordRange;
         completions.push(completion);
     }
@@ -231,7 +231,7 @@ function getFunctionCauseCompletions(completions: vscode.CompletionItem[], ctx: 
 
         else if (cause in keywords.kcScriptCauseArgs) {
             for (let s of keywords.kcScriptCauseArgs[cause as keyof typeof keywords.kcScriptCauseArgs]) {
-                const completion = new vscode.CompletionItem(s, vscode.CompletionItemKind.Constant);
+                const completion = new vscode.CompletionItem(s, vscode.CompletionItemKind.EnumMember);
                 // OnDialog should activate autocomplete again for the available dialogs
                 if (cause === "OnDialog") {
                     tryAddSpaceAfterAutocomplete(completion, ctx);
@@ -288,10 +288,10 @@ function getFunctionBodyCompletions(completions: vscode.CompletionItem[], ctx: G
 
         // Only suggest enum options if we haven't given one yet
         if (isFunctionEnumType(func) && (args.length <= 2)) {
-            // Constants
+            // Enums
             if (func in keywords.kcScriptFunctionArgs) {
                 for (let s of keywords.kcScriptFunctionArgs[func as keyof typeof keywords.kcScriptFunctionArgs]) {
-                    const completion = new vscode.CompletionItem(s, vscode.CompletionItemKind.Constant);
+                    const completion = new vscode.CompletionItem(s, vscode.CompletionItemKind.EnumMember);
                     completions.push(completion);
                 }
             }
@@ -300,7 +300,7 @@ function getFunctionBodyCompletions(completions: vscode.CompletionItem[], ctx: G
             else if (func === "TriggerEvent") {
                 const wordRange = ctx.document.getWordRangeAtPosition(ctx.position, /"?[\w\d]+"?|""/);
                 for (let s of keywords.kcScriptTriggerEventArgs) {
-                    const completion = new vscode.CompletionItem('"' + s + '"', vscode.CompletionItemKind.Constant);
+                    const completion = new vscode.CompletionItem('"' + s + '"', vscode.CompletionItemKind.EnumMember);
                     completion.range = wordRange;
                     completions.push(completion);
                 }
@@ -333,7 +333,7 @@ function tryCompleteFunctionCauseOrHash(key: string, completions: vscode.Complet
         for (var lineIdx = ctx.position.line - 1; ctx.document.lineAt(lineIdx).isEmptyOrWhitespace; --lineIdx) { }
         // If it is a section header, autocomplete key= as the preferred selection
         if (ctx.document.lineAt(lineIdx).text.trim().startsWith('[')) {
-            const completion = new vscode.CompletionItem(key + "=", vscode.CompletionItemKind.Constant);
+            const completion = new vscode.CompletionItem(key + "=", vscode.CompletionItemKind.Field);
             completion.preselect = true;
             completion.sortText = "!!" + key + "=";
             completions.push(completion);
@@ -349,7 +349,7 @@ function getDescriptionCompletions(completions: vscode.CompletionItem[], ctx: GQ
     // No equal sign means we can suggest properties
     if (!ctx.lineUntilCursor.includes('=')) {
         for (let s of propertyList.getProperties()) {
-            const completion = new vscode.CompletionItem(s + '=', vscode.CompletionItemKind.Constant);
+            const completion = new vscode.CompletionItem(s + '=', vscode.CompletionItemKind.Field);
             completion.command = { command: 'editor.action.triggerSuggest', title: 'Trigger Suggest' };
             const docs = propertyList.getPropertyDocs(s);
             if (docs) completion.documentation = new vscode.MarkdownString(docs);
@@ -362,7 +362,7 @@ function getDescriptionCompletions(completions: vscode.CompletionItem[], ctx: GQ
         if (!key) return;
 
         for (let s of propertyList.getEnumOptions(key[1])) {
-            const completion = new vscode.CompletionItem(s, vscode.CompletionItemKind.Constant);
+            const completion = new vscode.CompletionItem(s, vscode.CompletionItemKind.EnumMember);
             completions.push(completion);
         }
     }
@@ -373,7 +373,7 @@ function getDialogOptionCompletions(completions: vscode.CompletionItem[], ctx: G
     const wordRange = ctx.document.getWordRangeAtPosition(ctx.position, /"?\w+"?|""/);
     const dialogs = getDialogDefinitions(ctx.document);
     for (let [dialogName, dialogText] of dialogs.entries()) {
-        const completion = new vscode.CompletionItem('"' + dialogName + '"', vscode.CompletionItemKind.Constant);
+        const completion = new vscode.CompletionItem('"' + dialogName + '"', vscode.CompletionItemKind.Text);
         completion.detail = dialogText;
         completion.filterText = '"' + dialogName + '"' + ' ' + dialogText; // Filter first by dialog name, then by the text. This lets you search by the text and it will show up in autocomplete
         completion.range = wordRange;
