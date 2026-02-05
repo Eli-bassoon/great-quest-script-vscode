@@ -6,7 +6,7 @@ import * as vscode from 'vscode';
 
 import { keywords, kcScriptFunction } from './keywords';
 import { propertyLists } from './propertylist';
-import { getSectionNesting, getEntityDescType } from './parsing';
+import { getSectionNesting, getEntityDescType, iterSections } from './parsing';
 
 export class GQSDocumentSymbolProvider implements vscode.DocumentSymbolProvider {
     public provideDocumentSymbols(document: vscode.TextDocument, _token: vscode.CancellationToken) {
@@ -15,32 +15,28 @@ export class GQSDocumentSymbolProvider implements vscode.DocumentSymbolProvider 
         // Stack of symbols being parsed
         const stack: vscode.DocumentSymbol[] = [];
 
-        for (let line = 0; line < document.lineCount; ++line) {
-            // Try to match header of form [...[THING]...]
-            const match = document.lineAt(line).text.match(/^(?<brackets>\[+)(?<name>.*?)\]+/d);
-            if (match && match.groups && match.indices && match.indices.groups) {
-                const depth = match.groups.brackets.length;
+        for (const section of iterSections(document)) {
+            if (!section.match.groups || !section.match.indices || !section.match.indices.groups) continue;
 
-                // Pop to stack if we are lower depth
-                if (depth <= stack.length) {
-                    while (stack.length && depth <= stack.length) {
-                        popStack(stack, symbols);
-                    }
+            // Pop to stack if we are lower depth
+            if (section.depth <= stack.length) {
+                while (stack.length && section.depth <= stack.length) {
+                    popStack(stack, symbols);
                 }
-                // Depth must either increase by exactly one or decrease by any amount
-                // If we increase by more than 1, the document is malformed
-                else if (depth > stack.length + 1) {
-                    return symbols;
-                }
-
-                // Push the new symbol
-                const symbolKind = getSymbolKind(depth, match.groups.name);
-
-                const range = new vscode.Range(line, match.indices.groups.name[0], line, match.indices.groups.name[1]);
-                const symbol = new vscode.DocumentSymbol(match.groups.name, "", symbolKind, range, range);
-
-                stack.push(symbol);
             }
+            // Depth must either increase by exactly one or decrease by any amount
+            // If we increase by more than 1, the document is malformed
+            else if (section.depth > stack.length + 1) {
+                return symbols;
+            }
+
+            // Push the new symbol
+            const symbolKind = getSymbolKind(section.depth, section.name);
+
+            const range = new vscode.Range(section.line, section.match.indices.groups.name[0], section.line, section.match.indices.groups.name[1]);
+            const symbol = new vscode.DocumentSymbol(section.name, "", symbolKind, range, range);
+
+            stack.push(symbol);
         }
 
         // EOF, pop all remaining ranges

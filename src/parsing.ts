@@ -26,7 +26,7 @@ export function getSectionNesting(document: vscode.TextDocument, line: number): 
             text = match[0];
 
             let nestLevel = 0;
-            for (; (nestLevel < text.length) && (text.charAt(nestLevel) === '[') && (text.charAt(text.length - nestLevel - 1) === ']'); ++nestLevel) {}
+            for (; (nestLevel < text.length) && (text.charAt(nestLevel) === '[') && (text.charAt(text.length - nestLevel - 1) === ']'); ++nestLevel) { }
 
             // Add section if it is less than the current section depth
             if (nestLevel < currNesting) {
@@ -43,6 +43,23 @@ export function getSectionNesting(document: vscode.TextDocument, line: number): 
     return sections.reverse();
 }
 
+// Iterates over all the balanced sections in the document
+export type SectionType = { name: string, text: string, depth: number, line: number, match: RegExpMatchArray }
+export function* iterSections(document: vscode.TextDocument): Generator<SectionType> {
+    for (let line = 0; line < document.lineCount; ++line) {
+        // Try to match header of form [...[THING]...]
+        const match = document.lineAt(line).text.match(/^\s*(?<brackets1>\[+)(?<name>.*?)(?<brackets2>\]+)/d);
+        if (match && match.groups) {
+            const depth1 = match.groups.brackets1.length;
+            const depth2 = match.groups.brackets2.length;
+            // Ensure the header is balanced
+            if (depth1 === depth2) {
+                yield { name: match.groups.name, text: match[0], depth: depth1, line, match };
+            }
+        }
+    }
+}
+
 // Assuming we are in an entity description in the [EntityDescriptions] section, this finds the type of the entity, marked by "type=TYPE"
 export function getEntityDescType(document: vscode.TextDocument, startLine: number): string {
     // Iterate forwards and backwards until we hit the section start or we hit the type= section
@@ -51,7 +68,7 @@ export function getEntityDescType(document: vscode.TextDocument, startLine: numb
             let text = document.lineAt(line).text.trim();
             if (!text) continue; // Skip when empty
             if (text.startsWith('[')) break; // Stop when we find a section
-    
+
             const match = text.match(/^\s*type\s*=\s*(\w+)/);
             if (match) {
                 return match[1];
