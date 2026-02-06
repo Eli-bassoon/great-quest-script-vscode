@@ -6,7 +6,7 @@ import * as vscode from 'vscode';
 
 import { keywords, kcScriptFunction } from './keywords';
 import { propertyLists } from './propertylist';
-import { getSectionNesting, getEntityDescType, getPropertyList, getDialogDefinitions } from './parsing';
+import { getSectionNesting, getEntityDescType, getPropertyList, getDialogDefinitions, getEntityDefinitions } from './parsing';
 import { makeRandomHash } from './codeactions';
 import { doctext } from './doctext';
 
@@ -55,13 +55,21 @@ export class GQSCompletionItemProvider implements vscode.CompletionItemProvider 
         }
 
         // Sections
-        if (ctx.lineUntilCursor.startsWith('[')) {
+        if (ctx.lineUntilCursor.trim().startsWith('[')) {
             getSectionCompletions(completions, ctx);
             return completions;
         }
 
         // From here on, we assume we are inside some section
         if (ctx.topSection === undefined) return completions;
+
+        const args = ctx.lineUntilCursor.split(/ +/);
+
+        // Complete entities after "--AsEntity"
+        if (ctx.lineUntilCursor.match(/\-\-AsEntity\s*("[^"]*)?$/)) {
+            getEntityOptionCompletions(completions, ctx);
+            return completions;
+        }
 
         // kcScript
         if ((ctx.sections.at(-1) === 'Function') || ((ctx.topSection === 'Sequences') && (ctx.sections.length === 3))) {
@@ -78,7 +86,6 @@ export class GQSCompletionItemProvider implements vscode.CompletionItemProvider 
         }
 
         // Flags for other headers
-        const args = ctx.lineUntilCursor.split(/ +/);
         if ((args.length > 1) && (ctx.sections.length === 1)) {
             if (ctx.topSection in keywords.gqsSectionFlags) {
                 provideFlagCompletions(completions, ctx.flagWordRange, keywords.gqsSectionFlags[ctx.topSection as keyof typeof keywords.gqsSectionFlags]);
@@ -105,10 +112,10 @@ function provideFlagCompletions(completions: vscode.CompletionItem[], flagWordRa
 
 // Get completions when we are in a section
 function getSectionCompletions(completions: vscode.CompletionItem[], ctx: GQSCompletionContext) {
-    const bracketMatch = ctx.lineUntilCursor.match(/^\[+/);
+    const bracketMatch = ctx.lineUntilCursor.match(/^\s*(\[+)/);
     if (!bracketMatch) return;
 
-    const bracketsTyped = bracketMatch[0].length;
+    const bracketsTyped = bracketMatch[1].length;
 
     const insideBracketRegExp = /\[+(.*?)\]+/;
     const wordRange = ctx.document.getWordRangeAtPosition(ctx.position, insideBracketRegExp);
@@ -123,7 +130,7 @@ function getSectionCompletions(completions: vscode.CompletionItem[], ctx: GQSCom
     }
 
     // Register custom sections so we go to the next line when tab completing, always at depth 2
-    if (bracketsTyped === 2) {
+    else if (bracketsTyped === 2) {
         const sectionText = ctx.lineText.match(insideBracketRegExp);
         if (sectionText) {
             const completion = getSingleSectionCompletion(sectionText[1], bracketsTyped, wordRange, false);
@@ -132,7 +139,7 @@ function getSectionCompletions(completions: vscode.CompletionItem[], ctx: GQSCom
     }
 
     // Register custom sequence section at depth 3
-    if ((bracketsTyped === 3) && (ctx.topSection === "Sequences")) {
+    else if ((bracketsTyped === 3) && (ctx.topSection === "Sequences")) {
         const sectionText = ctx.lineText.match(insideBracketRegExp);
         if (sectionText) {
             // If we are in a sequence, add "hash=" after
@@ -314,6 +321,11 @@ function getFunctionBodyCompletions(completions: vscode.CompletionItem[], ctx: G
             else if (func === "ShowDialog") {
                 getDialogOptionCompletions(completions, ctx);
             }
+
+            // Entity options
+            else if (["SetTarget", "SetCameraTarget", "SetCameraPivot"].includes(func)) {
+                getEntityOptionCompletions(completions, ctx);
+            }
         }
 
         // Don't provide flags if we're an enum function and haven't given an enum yet
@@ -326,7 +338,9 @@ function getFunctionBodyCompletions(completions: vscode.CompletionItem[], ctx: G
             }
 
             // General flags for any function
-            provideFlagCompletions(completions, ctx.flagWordRange, keywords.kcScriptGeneralFlags);
+            provideFlagCompletions(completions, ctx.flagWordRange, ["ExternalEntity"]);
+            provideFlagCompletions(completions, ctx.flagWordRange, ["AsEntity"]);
+            tryAddSpaceAfterAutocomplete(completions.at(-1) as vscode.CompletionItem, ctx, true);
         }
     }
 }
@@ -379,10 +393,21 @@ function getDescriptionCompletions(completions: vscode.CompletionItem[], ctx: GQ
 function getDialogOptionCompletions(completions: vscode.CompletionItem[], ctx: GQSCompletionContext) {
     const wordRange = ctx.document.getWordRangeAtPosition(ctx.position, /"?\w+"?|""/);
     const dialogs = getDialogDefinitions(ctx.document);
-    for (let [dialogName, dialogText] of dialogs.entries()) {
+    for (const [dialogName, dialogText] of dialogs.entries()) {
         const completion = new vscode.CompletionItem('"' + dialogName + '"', vscode.CompletionItemKind.Text);
         completion.detail = dialogText;
         completion.filterText = '"' + dialogName + '"' + ' ' + dialogText; // Filter first by dialog name, then by the text. This lets you search by the text and it will show up in autocomplete
+        completion.range = wordRange;
+        completions.push(completion);
+    }
+}
+
+// Entity options
+function getEntityOptionCompletions(completions: vscode.CompletionItem[], ctx: GQSCompletionContext) {
+    const wordRange = ctx.document.getWordRangeAtPosition(ctx.position, /"?\w+"?|""/);
+    const entities = getEntityDefinitions(ctx.document);
+    for (const entity of entities) {
+        const completion = new vscode.CompletionItem('"' + entity + '"', vscode.CompletionItemKind.Text);
         completion.range = wordRange;
         completions.push(completion);
     }
@@ -397,7 +422,8 @@ function isFunctionEnumType(_function: string): boolean {
         // Other functions
         || (["SetFlags", "ClearFlags", "InitFlags", // Entity flag options
             "TriggerEvent", // Event strings
-            "ShowDialog" // Dialogs
+            "ShowDialog", // Dialogs
+            "SetTarget", "SetCameraTarget", "SetCameraPivot", // Entity instance options
         ].includes(_function));
 }
 

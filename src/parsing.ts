@@ -148,3 +148,38 @@ export function getDialogDefinitions(document: vscode.TextDocument): Map<string,
     // Return definitions on EOF
     return definitions;
 }
+
+// Finds all defined entities in this file only. There are doubtless more options in the data file, but I'm not going to be them here.
+export function getEntityDefinitions(document: vscode.TextDocument): string[] {
+    const entities = [];
+
+    let inEntities = false;
+    for (const section of iterSections(document)) {
+        // Handle top-level sections
+        if (section.depth === 1) {
+            // If we haven't seen it yet, transition into entities state
+            if (!inEntities) {
+                if (section.name === "Entities") {
+                    inEntities = true;
+                }
+            }
+            // Otherwise break, as we found a new top-level section and don't need to check any more
+            else {
+                break;
+            }
+        }
+
+        // Add entities to list
+        else if ((section.depth === 2) && inEntities) {
+            entities.push(section.name);
+        }
+    }
+
+    // Always include Frogger as an option
+    if (!entities.includes("FrogInst001")) {
+        entities.push("FrogInst001");
+    }
+
+    // Return entities on EOF
+    return entities;
+}
