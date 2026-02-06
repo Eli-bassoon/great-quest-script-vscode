@@ -1,4 +1,4 @@
-export const entityFlags = [
+export const entity = [
     "Hide",
     "UnusedBitFlag01",
     "ForceStayActive",
@@ -19,10 +19,10 @@ export const entityFlags = [
     "PreventDeath",
 ];
 
-export const kcScriptFunctionFlags = {
-    "SetFlags": entityFlags,
-    "ClearFlags": entityFlags,
-    "InitFlags": entityFlags,
+export const functions = {
+    "SetFlags": entity,
+    "ClearFlags": entity,
+    "InitFlags": entity,
     "SetSequence": [
         "IgnoreIfAlreadyActive",
         "OpenBoneChannel",
@@ -44,11 +44,12 @@ export const kcScriptFunctionFlags = {
         "Repeat",
     ],
 };
-for (var i of ['02', '05', '06', '07', '08', '09', '10', '11', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31']) { // Other damage types
-    kcScriptFunctionFlags.TakeDamage.push('UnnamedDamageType' + i);
+// Other damage types
+for (var i of ['02', '05', '06', '07', '08', '09', '10', '11', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31']) {
+    functions.TakeDamage.push('UnnamedDamageType' + i);
 }
 
-export const gqsSectionFlags = {
+export const sections = {
     "Models": [
         "CreateModelDesc",
     ],
@@ -75,12 +76,12 @@ export const gqsSectionFlags = {
     ],
 };
 
-export const kcScriptGeneralFlags = [
+export const general = [
     "AsEntity",
     "ExternalEntity",
 ];
 
-export const kcScriptCauseFlags = [
+export const cause = [
     "AllowUnused",
 ];
 

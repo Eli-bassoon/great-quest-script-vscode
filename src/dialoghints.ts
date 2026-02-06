@@ -4,9 +4,7 @@ Show dialog as ghost text
 
 import * as vscode from 'vscode';
 
-import { keywords, kcScriptFunction } from './keywords';
-import { propertyLists } from './propertylist';
-import { getSectionNesting, getEntityDescType, getDialogDefinitions } from './parsing';
+import * as parsing from './parsing';
 
 export let decorationType = vscode.window.createTextEditorDecorationType({
     after: {
@@ -27,7 +25,7 @@ export function updateDialogDecorations() {
     const decorations: vscode.DecorationOptions[] = [];
 
     // Find the definitions of the dialog
-    const definitions = getDialogDefinitions(editor.document);
+    const definitions = parsing.getDialogDefinitions(editor.document);
 
     // Show hints for references to dialog
     for (let line = 0; line < editor.document.lineCount; ++line) {

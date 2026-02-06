@@ -4,11 +4,10 @@ Autocompletion provider
 
 import * as vscode from 'vscode';
 
-import { keywords, kcScriptFunction } from './keywords';
-import { propertyLists } from './propertylist';
-import { getSectionNesting, getEntityDescType, getPropertyList, getDialogDefinitions, getEntityDefinitions } from './parsing';
+import * as keywords from './keywords';
+import * as doctext from './doctext';
+import * as parsing from './parsing';
 import { makeRandomHash } from './codeactions';
-import { doctext } from './doctext';
 
 class GQSCompletionContext {
     document: vscode.TextDocument;
@@ -22,7 +21,7 @@ class GQSCompletionContext {
     constructor(document: vscode.TextDocument, position: vscode.Position) {
         this.document = document;
         this.position = position;
-        this.sections = getSectionNesting(document, position.line - 1);
+        this.sections = parsing.getSectionNesting(document, position.line - 1);
         this.lineText = document.lineAt(position).text;
 
         // Line sliced up to the cursor
@@ -87,8 +86,8 @@ export class GQSCompletionItemProvider implements vscode.CompletionItemProvider 
 
         // Flags for other headers
         if ((args.length > 1) && (ctx.sections.length === 1)) {
-            if (ctx.topSection in keywords.gqsSectionFlags) {
-                provideFlagCompletions(completions, ctx.flagWordRange, keywords.gqsSectionFlags[ctx.topSection as keyof typeof keywords.gqsSectionFlags]);
+            if (ctx.topSection in keywords.flags.sections) {
+                provideFlagCompletions(completions, ctx.flagWordRange, keywords.flags.sections[ctx.topSection as keyof typeof keywords.flags.sections]);
             }
         }
 
@@ -123,7 +122,7 @@ function getSectionCompletions(completions: vscode.CompletionItem[], ctx: GQSCom
     // We are top-level if there is only one square bracket
     if (bracketsTyped === 1) {
         // Register top-level GQS sections
-        for (let s of keywords.gqsSections) {
+        for (let s of keywords.sections.gqs) {
             const completion = getSingleSectionCompletion(s, 1, wordRange, false);
             completions.push(completion);
         }
@@ -219,11 +218,11 @@ function getFunctionCauseCompletions(completions: vscode.CompletionItem[], ctx: 
 
     // If there are no arguments, we complete the cause types
     if (args.length <= 1) {
-        for (let s of keywords.kcScriptCauses) {
+        for (let s of keywords.causes) {
             const completion = new vscode.CompletionItem(s, vscode.CompletionItemKind.Function);
             // Activate autocomplete again if it's an enum type
-            tryAddSpaceAfterAutocomplete(completion, ctx, s in keywords.kcScriptCauseArgs);
-            const docs = doctext.kcScriptFunctionDocs[s as keyof typeof doctext.kcScriptFunctionDocs];
+            tryAddSpaceAfterAutocomplete(completion, ctx, s in keywords.causes);
+            const docs = doctext.functions[s as keyof typeof doctext.functions];
             completion.detail = docs[0];
             completion.documentation = new vscode.MarkdownString(docs[1]);
             completions.push(completion);
@@ -238,8 +237,8 @@ function getFunctionCauseCompletions(completions: vscode.CompletionItem[], ctx: 
             getDialogOptionCompletions(completions, ctx);
         }
 
-        else if (cause in keywords.kcScriptCauseArgs) {
-            for (let s of keywords.kcScriptCauseArgs[cause as keyof typeof keywords.kcScriptCauseArgs]) {
+        else if (cause in keywords.args.causes) {
+            for (let s of keywords.args.causes[cause as keyof typeof keywords.args.causes]) {
                 const completion = new vscode.CompletionItem(s, vscode.CompletionItemKind.EnumMember);
                 // OnDialog should activate autocomplete again for the available dialogs
                 if (cause === "OnDialog") {
@@ -251,7 +250,7 @@ function getFunctionCauseCompletions(completions: vscode.CompletionItem[], ctx: 
 
         // Autocomplete flags if we've done all the arguments
         if ((args.length > 2) || ((args.length > 3) && (cause === 'OnDialog'))) {
-            provideFlagCompletions(completions, ctx.flagWordRange, keywords.kcScriptCauseFlags);
+            provideFlagCompletions(completions, ctx.flagWordRange, keywords.flags.cause);
         }
     }
 }
@@ -279,7 +278,7 @@ function getFunctionBodyCompletions(completions: vscode.CompletionItem[], ctx: G
 
     // If there are no arguments, we complete the function types
     if (args.length <= 1) {
-        let functionOptions = inActionSequence ? keywords.kcScriptInSequenceFns : keywords.kcScriptOutSequenceFns;
+        let functionOptions = inActionSequence ? keywords.inSequenceFns : keywords.outSequenceFns;
 
         for (let _function of functionOptions) {
             const completion = new vscode.CompletionItem(_function, vscode.CompletionItemKind.Function);
@@ -287,7 +286,7 @@ function getFunctionBodyCompletions(completions: vscode.CompletionItem[], ctx: G
             if (isFunctionEnumType(_function)) {
                 tryAddSpaceAfterAutocomplete(completion, ctx);
             }
-            const docs = doctext.kcScriptFunctionDocs[_function as keyof typeof doctext.kcScriptFunctionDocs];
+            const docs = doctext.functions[_function as keyof typeof doctext.functions];
             completion.detail = docs[0];
             completion.documentation = new vscode.MarkdownString(docs[1]);
             completions.push(completion);
@@ -300,8 +299,8 @@ function getFunctionBodyCompletions(completions: vscode.CompletionItem[], ctx: G
         // Only suggest enum options if we haven't given one yet
         if (isFunctionEnumType(func) && (args.length <= 2)) {
             // Enums
-            if (func in keywords.kcScriptFunctionArgs) {
-                for (let s of keywords.kcScriptFunctionArgs[func as keyof typeof keywords.kcScriptFunctionArgs]) {
+            if (func in keywords.args.functions) {
+                for (let s of keywords.args.functions[func as keyof typeof keywords.args.functions]) {
                     const completion = new vscode.CompletionItem(s, vscode.CompletionItemKind.EnumMember);
                     completions.push(completion);
                 }
@@ -310,7 +309,7 @@ function getFunctionBodyCompletions(completions: vscode.CompletionItem[], ctx: G
             // TriggerEvent string constants
             else if (func === "TriggerEvent") {
                 const wordRange = ctx.document.getWordRangeAtPosition(ctx.position, /"?[\w\d]+"?|""/);
-                for (let s of keywords.kcScriptTriggerEventArgs) {
+                for (let s of keywords.args.events) {
                     const completion = new vscode.CompletionItem('"' + s + '"', vscode.CompletionItemKind.EnumMember);
                     completion.range = wordRange;
                     completions.push(completion);
@@ -333,8 +332,8 @@ function getFunctionBodyCompletions(completions: vscode.CompletionItem[], ctx: G
         if (["SetFlags", "ClearFlags", "InitFlags"].includes(func) ||
             !((args.length === 2) && isFunctionEnumType(func))) {
             // Function-specific flags
-            if (func in keywords.kcScriptFunctionFlags) {
-                provideFlagCompletions(completions, ctx.flagWordRange, keywords.kcScriptFunctionFlags[func as keyof typeof keywords.kcScriptFunctionFlags]);
+            if (func in keywords.flags.functions) {
+                provideFlagCompletions(completions, ctx.flagWordRange, keywords.flags.functions[func as keyof typeof keywords.flags.functions]);
             }
 
             // General flags for any function
@@ -361,7 +360,7 @@ function tryCompleteFunctionCauseOrHash(key: string, completions: vscode.Complet
 
 // Keys, enums, and flags for descriptions
 function getDescriptionCompletions(completions: vscode.CompletionItem[], ctx: GQSCompletionContext) {
-    let propertyList = getPropertyList(ctx.document, ctx.position, ctx.topSection);
+    let propertyList = parsing.getPropertyList(ctx.document, ctx.position, ctx.topSection);
     if (propertyList === null) return;
 
     // No equal sign means we can suggest properties
@@ -392,7 +391,7 @@ function getDescriptionCompletions(completions: vscode.CompletionItem[], ctx: GQ
 // Dialog options
 function getDialogOptionCompletions(completions: vscode.CompletionItem[], ctx: GQSCompletionContext) {
     const wordRange = ctx.document.getWordRangeAtPosition(ctx.position, /"?\w+"?|""/);
-    const dialogs = getDialogDefinitions(ctx.document);
+    const dialogs = parsing.getDialogDefinitions(ctx.document);
     for (const [dialogName, dialogText] of dialogs.entries()) {
         const completion = new vscode.CompletionItem('"' + dialogName + '"', vscode.CompletionItemKind.Text);
         completion.detail = dialogText;
@@ -405,7 +404,7 @@ function getDialogOptionCompletions(completions: vscode.CompletionItem[], ctx: G
 // Entity options
 function getEntityOptionCompletions(completions: vscode.CompletionItem[], ctx: GQSCompletionContext) {
     const wordRange = ctx.document.getWordRangeAtPosition(ctx.position, /"?\w+"?|""/);
-    const entities = getEntityDefinitions(ctx.document);
+    const entities = parsing.getEntityDefinitions(ctx.document);
     for (const entity of entities) {
         const completion = new vscode.CompletionItem('"' + entity + '"', vscode.CompletionItemKind.Text);
         completion.range = wordRange;
@@ -417,7 +416,7 @@ function getEntityOptionCompletions(completions: vscode.CompletionItem[], ctx: G
 function isFunctionEnumType(_function: string): boolean {
     return (
         // Function has rigid enum options
-        _function in keywords.kcScriptFunctionArgs)
+        _function in keywords.args.functions)
 
         // Other functions
         || (["SetFlags", "ClearFlags", "InitFlags", // Entity flag options

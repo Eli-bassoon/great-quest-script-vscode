@@ -1,5 +1,5 @@
 // This is automatically generated from the documentation on GitHub
-const kcScriptFunctionDocs = {
+export const functions = {
 	OnLevel: ['OnLevel <BEGIN|END>', '**Summary:** Executes when the level starts & ends.  \n**Supported Entity Types:** All  \n<!---**Ghidra Reference (Ignore):** `EvLevelBegin, EvLevelEnd`-->\n'],
 	OnPlayer: ['OnPlayer <INTERACT|BUMPS|TARGET_FOR_ATTACK|PICKUP_ITEM>', '**Summary:** Executes when the player has an interaction with the script owner.  \n**Supported Entity Types:** Base Actors  \n**Actions:**  \n```properties\nINTERACT # The player interacts with the script owner. script owner must be at least a kcCActorBase. Code: CFrogCtl::OnBeginAction, CFrogCtl::CheckForHealthBug\nBUMPS # The player collides/bumps with the script owner. script owner must be a CProp or a CCharacter. Code: CProp::TriggerHitCallback, CCharacter::BumpCallback\nTARGET_FOR_ATTACK # The player targets the script owner for an attack. script owner must be kcCActorBase. Code: CFrogCtl::Spit, CFrogCtl::OnBeginMissile, CFrogCtl::OnBeginMagicStone, and, CFrogCtl::OnBeginMelee\nPICKUP_ITEM # The player picks up the script owner as an item. script owner must be CItemDesc. Code: CCharacter::PickupCallback\n```\n'],
 	OnActor: ['OnActor <BUMPS|HEAL|DEATH>', '**Summary:** Executes when one of the following actions happens to the script owner.  \n**Supported Entity Types:** Base Actors  \n**Actions:**  \n```properties\nBUMPS # Another actor bumps into the script owner. script owner must be a CProp or a CCharacter. Code: CProp::TriggerHitCallback, CCharacter::BumpCallback\nHEAL # The script owner heals. Code: script owner must be at least a kcCActor. kcCActor::OnDamage\nDEATH # The script owner dies. Code: script owner must be at least a kcCActor. kcCActor::OnDamage\n```\n'],
@@ -68,7 +68,7 @@ const kcScriptFunctionDocs = {
 	SetCameraParam: ['SetCameraParam <cameraParam> <value>', '**Summary:** Change the current camera\'s settings.  \n**Allowed In:** Script Only  \n**Supported Entity Types:** All  \n<!---**Ghidra Reference (Ignore):** `kcCScriptMgr::FireCameraEffect -> kcCCameraStack::OnSetParam`-->\nThe value is a decimal number.\n\n```properties\n# kcCameraPivotParam Values:\nPIVOT_DISTANCE # How much distance to put between the camera and the pivot entity. On the follow camera, this is the "follow distance"\nTARGET_OFFSET_X # An offset to the position the camera looks at (the target entity).\nTARGET_OFFSET_Y # An offset to the position the camera looks at (the target entity).\nTARGET_OFFSET_Z # An offset to the position the camera looks at (the target entity).\nPIVOT_OFFSET_X # An offset to the pivot position (the pivot entity).\nPIVOT_OFFSET_Y # An offset to the pivot position (the pivot entity). On the follow camera, this is the "follow vertex offset"\nPIVOT_OFFSET_Z # An offset to the pivot position (the pivot entity).\nTRANSITION_DURATION # How long the camera transition should take.\nLOCK_PIVOT_Y # The camera will have its pivot Y locked to the target Y. Seems to only ever be used by accident, as its only usage is in The Tree of Knowledge, and the camera cuts off the top of Mr. D because of this param getting set.\n```'],
 };
 
-const entityDescriptionDocs = {
+export const entityDescs = {
     "ENTITY": {
         "type": "Controls what kind of entity description the following data will be.\nAvailable Types: CHARACTER, PROP, PARTICLE_EMITTER, WAYPOINT, ACTOR, ACTOR_BASE\nCOIN, GEM, HONEY_POT, ITEM, MAGIC_STONE, OBJ_KEY, UNIQUE_ITEM\n",
         "defaultFlags": "When creating a new entity instance with this template in the 3D map viewer, the entity flags specified here will be applied to the entity.\nThis rarely will matter when creating entities with GQS, but this data is present in the game files/would be used by the developer's original editor.\nThese should be formatted as a comma-separated list, without the \"--\" prefix.\nA full list of flags is available here:\nhttps://github.com/Kneesnap/FrogLord/blob/master/resources/documentation/games/greatquest/scripting.md#setflags-both\n",
@@ -160,9 +160,4 @@ const entityDescriptionDocs = {
         "rotation": "The rotation of the entity in degrees",
         "scale": "The scale of the entity relative to the base model"
     }
-};
-
-export const doctext = {
-    kcScriptFunctionDocs,
-    entityDescriptionDocs,
 };

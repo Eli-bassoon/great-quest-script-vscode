@@ -1,5 +1,5 @@
-import { keywords } from './keywords';
-import { doctext } from './doctext';
+import * as keywords from './keywords';
+import * as doctext from './doctext';
 
 type GQSProperty = {
     name: string,
@@ -28,8 +28,8 @@ export class PropertyList {
         }
 
         // Construct key documentation map
-        if (id in doctext.entityDescriptionDocs) {
-            this.keysDocs = doctext.entityDescriptionDocs[id as keyof typeof doctext.entityDescriptionDocs];
+        if (id in doctext.entityDescs) {
+            this.keysDocs = doctext.entityDescs[id as keyof typeof doctext.entityDescs];
         }
     }
 
@@ -103,7 +103,7 @@ const entityPL = new PropertyList(
     null,
     [
         { name: 'type', options: ["CHARACTER", "PROP", "PARTICLE_EMITTER", "WAYPOINT", "ACTOR", "ACTOR_BASE", "COIN", "GEM", "HONEY_POT", "ITEM", "MAGIC_STONE", "OBJ_KEY", "UNIQUE_ITEM"] },
-        { name: 'defaultFlags', options: keywords.entityFlags },
+        { name: 'defaultFlags', options: keywords.flags.entity },
         { name: 'boundingSpherePos', options: [] },
         { name: 'boundingSphereRadius', options: [] },
     ]
@@ -173,7 +173,7 @@ const actorPL = new PropertyList(
     [
         { name: 'maxHealth', options: [] },
         { name: 'startHealth', options: [] },
-        { name: 'immuneMask', options: keywords.kcScriptFunctionFlags.TakeDamage },
+        { name: 'immuneMask', options: keywords.flags.functions.TakeDamage },
         { name: 'invincibleDurationLimitMs', options: [] },
     ]
 );
@@ -183,7 +183,7 @@ const characterPL = new PropertyList(
     actorPL,
     [
         { name: 'characterType', options: ["PLAYER", "STATIC", "WALKER", "FLYER", "SWIMMER"] },
-        { name: 'weaponMask', options: keywords.kcScriptFunctionFlags.TakeDamage },
+        { name: 'weaponMask', options: keywords.flags.functions.TakeDamage },
         { name: 'aggressionTimer', options: [] },
         { name: 'aiMeleeDamage', options: [] },
         { name: 'attackGoalPercent', options: [] },
@@ -278,8 +278,8 @@ const collisionPL = new PropertyList(
     [
         { name: 'type', options: ['CAPSULE'] }, // TODO triangle meshes
         { name: 'reaction', options: ['SLIDE', 'PENETRATE', 'HALT'] },
-        { name: 'collisionGroups', options: keywords.collisionGroups },
-        { name: 'collideWith', options: keywords.collisionGroups },
+        { name: 'collisionGroups', options: keywords.flags.collisionGroups },
+        { name: 'collideWith', options: keywords.flags.collisionGroups },
         { name: 'radius', options: [] },
         { name: 'height', options: [] },
         { name: 'offset', options: [] },
@@ -294,7 +294,7 @@ const entityInstPL = new PropertyList(
         { name: 'description', options: [] },
         { name: 'priority', options: [] },
         { name: 'targetEntity', options: [] },
-        { name: 'flags', options: keywords.entityFlags },
+        { name: 'flags', options: keywords.flags.entity },
         { name: 'billboardAxis', options: ["X", "Y", "Z"] },
         { name: 'position', options: [] },
         { name: 'rotation', options: [] },

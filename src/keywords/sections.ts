@@ -1,4 +1,4 @@
-export const gqsSections = [
+export const gqs = [
     "Models",
     "Textures",
     "SoundEffects",
@@ -15,7 +15,7 @@ export const gqsSections = [
     "Include",
 ];
 
-export const kcScriptSections = [
+export const script = [
     "Script",
     "Function",
 ];

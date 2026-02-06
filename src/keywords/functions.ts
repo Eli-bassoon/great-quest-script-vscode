@@ -1,4 +1,4 @@
-export const kcScriptCauses = [
+export const causes = [
     "OnLevel",
     "OnPlayer",
     "OnActor",
@@ -18,7 +18,7 @@ export interface kcScriptFunction {
     sequence: boolean,
 }
 
-export const kcScriptFunctions: kcScriptFunction[] = [
+export const functions: kcScriptFunction[] = [
 	{ name: "Entity.Activate", script: true, sequence: false },
 	{ name: "Entity.Deactivate", script: true, sequence: false },
 	{ name: "TerminateEntity", script: true, sequence: true },
@@ -72,5 +72,5 @@ export const kcScriptFunctions: kcScriptFunction[] = [
 	{ name: "SetCameraParam", script: true, sequence: false },
 ];
 
-export const kcScriptInSequenceFns: string[] = kcScriptFunctions.filter((f) => f.sequence).map((f) => f.name);
-export const kcScriptOutSequenceFns: string[] = kcScriptFunctions.filter((f) => f.script).map((f) => f.name);
+export const inSequenceFns: string[] = functions.filter((f) => f.sequence).map((f) => f.name);
+export const outSequenceFns: string[] = functions.filter((f) => f.script).map((f) => f.name);

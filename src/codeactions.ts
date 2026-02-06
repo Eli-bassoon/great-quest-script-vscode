@@ -4,10 +4,6 @@ Code action to generate hash automatically
 
 import * as vscode from 'vscode';
 
-import { keywords, kcScriptFunction } from './keywords';
-import { propertyLists } from './propertylist';
-import { getSectionNesting, getEntityDescType } from './parsing';
-
 export class GQSCodeActionProvider implements vscode.CodeActionProvider<vscode.CodeAction> {
     public provideCodeActions(
         document: vscode.TextDocument,

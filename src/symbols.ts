@@ -4,9 +4,7 @@ Breadcrumb symbols provider
 
 import * as vscode from 'vscode';
 
-import { keywords, kcScriptFunction } from './keywords';
-import { propertyLists } from './propertylist';
-import { getSectionNesting, getEntityDescType, iterSections } from './parsing';
+import * as parsing from './parsing';
 
 export class GQSDocumentSymbolProvider implements vscode.DocumentSymbolProvider {
     public provideDocumentSymbols(document: vscode.TextDocument, _token: vscode.CancellationToken) {
@@ -15,7 +13,7 @@ export class GQSDocumentSymbolProvider implements vscode.DocumentSymbolProvider 
         // Stack of symbols being parsed
         const stack: vscode.DocumentSymbol[] = [];
 
-        for (const section of iterSections(document)) {
+        for (const section of parsing.iterSections(document)) {
             if (!section.match.groups || !section.match.indices || !section.match.indices.groups) continue;
 
             // Pop to stack if we are lower depth

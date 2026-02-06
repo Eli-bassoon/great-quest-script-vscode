@@ -4,16 +4,14 @@ Folding sections provider
 
 import * as vscode from 'vscode';
 
-import { keywords, kcScriptFunction } from './keywords';
-import { propertyLists } from './propertylist';
-import { getSectionNesting, getEntityDescType, iterSections } from './parsing';
+import * as parsing from './parsing';
 
 export class GQSFoldingRangeProvider implements vscode.FoldingRangeProvider {
     public provideFoldingRanges(document: vscode.TextDocument, _context: vscode.FoldingContext, _token: vscode.CancellationToken) {
         const folds: vscode.FoldingRange[] = [];
         const stack: number[] = [];
         
-        for (const section of iterSections(document)) {
+        for (const section of parsing.iterSections(document)) {
             // Pop to stack if we are lower depth
             if (section.depth <= stack.length) {
                 while (stack.length && section.depth <= stack.length) {

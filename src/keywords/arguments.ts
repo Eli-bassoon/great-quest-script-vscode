@@ -1,4 +1,4 @@
-export const kcScriptCauseArgs = {
+export const causes = {
 	"OnLevel": [
 		"BEGIN",
 		"END"
@@ -55,7 +55,7 @@ export const kcScriptCauseArgs = {
 
 const axes = ["X", "Y", "Z"];
 
-export const kcScriptItems = [
+export const items = [
 	"NONE", // 00 / 00
     "STONE_FIRE", // 01 / 01
     "STONE_ICE", // 02 / 02
@@ -126,7 +126,7 @@ export const kcScriptItems = [
     "RUBY_TEARDROP" // 65 / 41
 ];
 
-export const kcScriptFunctionArgs = {
+export const functions = {
 	"SetAxisPosition": axes,
     "AddToAxisPosition": axes,
     "SetAxisRotation": axes,
@@ -171,11 +171,11 @@ export const kcScriptFunctionArgs = {
 		"TRANSITION_DURATION",
 		"LOCK_PIVOT_Y"
 	],
-	"SendPlayerHasItem": kcScriptItems,
-	"SetPlayerHasItem": kcScriptItems,
+	"SendPlayerHasItem": items,
+	"SetPlayerHasItem": items,
 };
 
-export const kcScriptTriggerEventArgs = [
+export const events = [
     'LevelCompleted',
     'BeginScreenFade',
     'EndScreenFade',

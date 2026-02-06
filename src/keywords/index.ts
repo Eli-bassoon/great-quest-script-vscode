@@ -1,25 +1,4 @@
-import { gqsSections, kcScriptSections } from './sections';
-import { kcScriptCauses, kcScriptFunctions, kcScriptInSequenceFns, kcScriptOutSequenceFns } from './functions';
-import { kcScriptCauseArgs, kcScriptFunctionArgs, kcScriptTriggerEventArgs, kcScriptItems } from './arguments';
-import { entityFlags, kcScriptFunctionFlags, gqsSectionFlags, kcScriptGeneralFlags, kcScriptCauseFlags, collisionGroups } from './flags';
-
-export const keywords = {
-    gqsSections,
-    kcScriptSections,
-    kcScriptCauses,
-    kcScriptFunctions,
-    kcScriptInSequenceFns,
-    kcScriptOutSequenceFns,
-    kcScriptCauseArgs,
-    kcScriptFunctionArgs,
-    kcScriptTriggerEventArgs,
-    kcScriptItems,
-    entityFlags,
-    kcScriptFunctionFlags,
-    gqsSectionFlags,
-    kcScriptGeneralFlags,
-    kcScriptCauseFlags,
-    collisionGroups,
-};
-
-export { kcScriptFunction } from './functions';
+export * as flags from './flags';
+export * as args from './arguments';
+export * as sections from './sections';
+export { causes, functions, inSequenceFns, outSequenceFns, kcScriptFunction } from './functions';
