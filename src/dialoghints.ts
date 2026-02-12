@@ -37,8 +37,11 @@ export function updateDialogDecorations() {
             if (!stringMatches) continue;
 
             const dialogName = stringMatches[1];
-            const dialogText = definitions.get(dialogName);
+            let dialogText = definitions.get(dialogName);
             if (dialogText !== undefined) {
+                if (dialogText.includes('\\')) {
+                    dialogText = dialogText.replaceAll('\\', '');
+                }
                 // The ghost text is at the end of the line
                 decorations.push({
                     range: new vscode.Range(line, lineText.length, line, lineText.length),
