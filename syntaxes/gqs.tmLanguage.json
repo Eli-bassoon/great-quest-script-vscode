@@ -137,7 +137,7 @@
 				},
 				{
 					"name": "constant.language.kscript.argument.axis.gqs",
-					"match": "X|Y|Z"
+					"match": "(?<!\\w)[XYZ](?!\\w)"
 				},
 				{
 					"name": "constant.language.kscript.argument.triggerevent.gqs",
