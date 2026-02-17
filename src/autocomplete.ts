@@ -181,6 +181,8 @@ function getSectionCompletions(completions: vscode.CompletionItem[], ctx: GQSCom
     // Autocomplete [[[Script]]] when we are in [Entities] section
     if ((ctx.topSection === 'Entities') && (ctx.sections.length === 2)) {
         const completion = getSingleSectionCompletion('Script', 3, wordRange, false);
+        completion.sortText = '!!Script';
+        completion.preselect = true;
         completions.push(completion);
     }
 }
