@@ -32,9 +32,10 @@ export class GQSDocumentSymbolProvider implements vscode.DocumentSymbolProvider 
             const symbolKind = getSymbolKind(section.depth, section.name);
             const range = new vscode.Range(section.line, section.match.indices.groups.brackets1[0], section.line, section.match.indices.groups.brackets2[1]);
             const selectionRange = new vscode.Range(section.line, section.match.indices.groups.name[0], section.line, section.match.indices.groups.name[1]);
-            const symbol = new vscode.DocumentSymbol(section.name, "", symbolKind, range, selectionRange);
-
-            stack.push(symbol);
+            if (section.name) {
+                const symbol = new vscode.DocumentSymbol(section.name, "", symbolKind, range, selectionRange);
+                stack.push(symbol);
+            }
         }
 
         // EOF, pop all remaining ranges
