@@ -137,7 +137,7 @@ export const functions = {
 		"VARIABLE",
 		"RANDOM"
 	],
-	"SetAiGoal": [
+	"SetAIGoal": [
 		"FIND",
 		"FLEE",
 		"WANDER",
