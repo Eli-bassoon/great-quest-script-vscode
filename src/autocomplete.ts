@@ -392,12 +392,18 @@ function getDescriptionCompletions(completions: vscode.CompletionItem[], ctx: GQ
     }
     // Otherwise we can suggest enum options
     else {
-        const key = ctx.lineUntilCursor.match(/^\s*(\w+?)\s*=/); // Get the key part of "key=" while removing space
-        if (!key) return;
+        const keyRegExp = ctx.lineUntilCursor.match(/^\s*(\w+?)\s*=/); // Get the key part of "key=" while removing space
+        if (!keyRegExp) return;
+        const key = keyRegExp[1];
 
-        for (let s of propertyList.getEnumOptions(key[1])) {
+        for (let s of propertyList.getEnumOptions(key)) {
             const completion = new vscode.CompletionItem(s, vscode.CompletionItemKind.EnumMember);
             completions.push(completion);
+        }
+
+        // Autocomplete entity descriptions defined in same file
+        if ((ctx.topSection === "Entities") && (key === "description")) {
+            getEntityDescOptionCompletions(completions, ctx);
         }
     }
 }
@@ -422,6 +428,15 @@ function getEntityOptionCompletions(completions: vscode.CompletionItem[], ctx: G
     for (const entity of entities) {
         const completion = new vscode.CompletionItem('"' + entity + '"', vscode.CompletionItemKind.Text);
         completion.range = wordRange;
+        completions.push(completion);
+    }
+}
+
+// Entity descriptions
+function getEntityDescOptionCompletions(completions: vscode.CompletionItem[], ctx: GQSCompletionContext) {
+    const descriptions = parsing.getSecondLevelSections(ctx.document, "EntityDescriptions");
+    for (const description of descriptions) {
+        const completion = new vscode.CompletionItem(description, vscode.CompletionItemKind.Text);
         completions.push(completion);
     }
 }
