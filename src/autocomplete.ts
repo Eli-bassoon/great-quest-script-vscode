@@ -401,9 +401,33 @@ function getDescriptionCompletions(completions: vscode.CompletionItem[], ctx: GQ
             completions.push(completion);
         }
 
-        // Autocomplete entity descriptions defined in same file
-        if ((ctx.topSection === "Entities") && (key === "description")) {
-            getEntityDescOptionCompletions(completions, ctx);
+        // Autocomplete special elements for Entities
+        if (ctx.topSection === "Entities") {
+            switch (key) {
+                case "description":
+                    getEntityDescOptionCompletions(completions, ctx);
+                    break;
+                
+                case "targetEntity":
+                    getEntityOptionCompletions(completions, ctx);
+                    break;
+            }
+        }
+        // Autocomplete special elements for EntityDescriptions
+        else if (ctx.topSection === "EntityDescriptions") {
+            switch (key) {
+                case "prevWaypoint":
+                case "nextWaypoint":
+                    {
+                    // This is basically getEntityOptionsCompletions, but without quotes
+                    const entities = parsing.getEntityDefinitions(ctx.document);
+                    for (const entity of entities) {
+                        const completion = new vscode.CompletionItem(entity, vscode.CompletionItemKind.Text);
+                        completions.push(completion);
+                    }
+                }
+                    break;
+            }
         }
     }
 }
