@@ -238,7 +238,19 @@ function getFunctionCauseCompletions(completions: vscode.CompletionItem[], ctx: 
         if ((args.length === 3) && (cause === 'OnDialog')) {
             getDialogOptionCompletions(completions, ctx);
         }
-
+        // OnEntity and OnWaypoint have entity options as second argument (some of the time)
+        else if (
+            (args.length === 3)
+            && (
+                (cause === "OnWaypoint")
+                || ((cause === "OnEntity")
+                    && ((args[1] === "ENTERS_WAYPOINT_AREA") || (args[1] === "LEAVES_WAYPOINT_AREA"))
+                )
+            )
+        ) {
+            getEntityOptionCompletions(completions, ctx);
+        }
+        // Other causes
         else if (cause in keywords.args.causes) {
             for (let s of keywords.args.causes[cause as keyof typeof keywords.args.causes]) {
                 const completion = new vscode.CompletionItem(s, vscode.CompletionItemKind.EnumMember);
