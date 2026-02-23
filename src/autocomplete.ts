@@ -3,6 +3,8 @@ Autocompletion provider
 */
 
 import * as vscode from 'vscode';
+import * as path from 'path';
+import * as fs from 'fs';
 
 import * as keywords from './keywords';
 import * as doctext from './doctext';
@@ -94,6 +96,11 @@ export class GQSCompletionItemProvider implements vscode.CompletionItemProvider 
         // Descriptions
         else if (ctx.sections.length === 2) {
             getDescriptionCompletions(completions, ctx);
+        }
+
+        // Include section completes file paths
+        if (ctx.topSection === "Include") {
+            getIncludeCompletions(completions, ctx);
         }
 
         return completions;
@@ -407,7 +414,7 @@ function getDescriptionCompletions(completions: vscode.CompletionItem[], ctx: GQ
                 case "description":
                     getEntityDescOptionCompletions(completions, ctx);
                     break;
-                
+
                 case "targetEntity":
                     getEntityOptionCompletions(completions, ctx);
                     break;
@@ -419,17 +426,61 @@ function getDescriptionCompletions(completions: vscode.CompletionItem[], ctx: GQ
                 case "prevWaypoint":
                 case "nextWaypoint":
                     {
-                    // This is basically getEntityOptionsCompletions, but without quotes
-                    const entities = parsing.getEntityDefinitions(ctx.document);
-                    for (const entity of entities) {
-                        const completion = new vscode.CompletionItem(entity, vscode.CompletionItemKind.Text);
-                        completions.push(completion);
+                        // This is basically getEntityOptionsCompletions, but without quotes
+                        const entities = parsing.getEntityDefinitions(ctx.document);
+                        for (const entity of entities) {
+                            const completion = new vscode.CompletionItem(entity, vscode.CompletionItemKind.Text);
+                            completions.push(completion);
+                        }
                     }
-                }
                     break;
             }
         }
     }
+}
+
+// Get file path completions in [Include] section
+function getIncludeCompletions(completions: vscode.CompletionItem[], ctx: GQSCompletionContext) {
+    // Always add a ".." to go up a folder
+    const completion = new vscode.CompletionItem('..');
+    completion.insertText = '../';
+    completion.command = { command: 'editor.action.triggerSuggest', title: 'Trigger Suggest' }; // Autocomplete again
+    completions.push(completion);
+
+    const baseDirPath = path.dirname(ctx.document.uri.fsPath);
+
+    // Get the directory path, going backwards until we hit a path separator
+    let end = -1;
+    for (let i = ctx.lineUntilCursor.length; i >= 1; --i) {
+        if (ctx.lineUntilCursor.charAt(i) === '/') {
+            end = i;
+            break;
+        }
+    }
+    const extendPath = ctx.lineUntilCursor.slice(0, end);
+
+    // Combine the file path with the extended path
+    const joinedPath = path.join(baseDirPath, extendPath);
+
+    try {
+        const inDirectory = fs.readdirSync(joinedPath);
+        for (const pathname of inDirectory) {
+            const stats = fs.statSync(path.join(joinedPath, pathname));
+            let completion;
+            if (stats.isFile()) {
+                completion = new vscode.CompletionItem(pathname, vscode.CompletionItemKind.File);
+                completion.sortText = 'file'; // f comes after d, so files shows up later
+            }
+            else {
+                completion = new vscode.CompletionItem(pathname + '/', vscode.CompletionItemKind.Folder);
+                completion.sortText = 'dir'; // d comes before f, so dirs show up first
+                completion.command = { command: 'editor.action.triggerSuggest', title: 'Trigger Suggest' }; // Autocomplete again
+            }
+            completions.push(completion);
+        }
+    }
+    // If the path doesn't exist, silently catch it and continue as normal
+    catch (e) {}
 }
 
 // Dialog options
