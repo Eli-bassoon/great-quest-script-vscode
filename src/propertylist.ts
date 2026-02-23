@@ -230,7 +230,9 @@ const itemPL = new PropertyList(
 const uniqueItemPL = new PropertyList(
     "UNIQUE_ITEM",
     itemPL,
-    [] // Maybe I will add the actual items
+    [
+        { name: 'itemType', options: ["CLOVER", "FAKE_CLOVER", "ENGINE_FUEL", "TEMPLE_STATUE", "SQUARE_ARTIFACT", "CIRCLE_ARTIFACT", "TRIANGLE_ARTIFACT", "BONE_CRUNCHER_STATUE", "CROWN", "RUBY_SHARD", "RUBY_SPHERE", "RUBY_TEARDROP"] }
+    ]
 );
 
 const coinPL = new PropertyList(
