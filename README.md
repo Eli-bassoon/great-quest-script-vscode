@@ -39,6 +39,4 @@ code --install-extension great-quest-script-<VERSION>.vsix
 
 ## Release Notes
 
-### 0.1.0
-
-Initial release with syntax highlighting, autocomplete, folding, breadcrumbs, dialog hints, hover docs, and automatic hash generation.
+See [CHANGELOG.md](./CHANGELOG.md)
