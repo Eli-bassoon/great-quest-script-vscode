@@ -416,7 +416,7 @@ function getDescriptionCompletions(completions: vscode.CompletionItem[], ctx: GQ
                     break;
 
                 case "targetEntity":
-                    getEntityOptionCompletions(completions, ctx);
+                    getEntityOptionCompletions(completions, ctx, false);
                     break;
             }
         }
@@ -425,14 +425,7 @@ function getDescriptionCompletions(completions: vscode.CompletionItem[], ctx: GQ
             switch (key) {
                 case "prevWaypoint":
                 case "nextWaypoint":
-                    {
-                        // This is basically getEntityOptionsCompletions, but without quotes
-                        const entities = parsing.getEntityDefinitions(ctx.document);
-                        for (const entity of entities) {
-                            const completion = new vscode.CompletionItem(entity, vscode.CompletionItemKind.Text);
-                            completions.push(completion);
-                        }
-                    }
+                    getEntityOptionCompletions(completions, ctx, false);
                     break;
             }
         }
@@ -497,11 +490,17 @@ function getDialogOptionCompletions(completions: vscode.CompletionItem[], ctx: G
 }
 
 // Entity options
-function getEntityOptionCompletions(completions: vscode.CompletionItem[], ctx: GQSCompletionContext) {
+function getEntityOptionCompletions(completions: vscode.CompletionItem[], ctx: GQSCompletionContext, useQuotes: boolean = true) {
     const wordRange = ctx.document.getWordRangeAtPosition(ctx.position, /"?\w+"?|""/);
     const entities = parsing.getEntityDefinitions(ctx.document);
     for (const entity of entities) {
-        const completion = new vscode.CompletionItem('"' + entity + '"', vscode.CompletionItemKind.Text);
+        let completion;
+        if (useQuotes) {
+            completion = new vscode.CompletionItem('"' + entity + '"', vscode.CompletionItemKind.Text);
+        }
+        else {
+            completion = new vscode.CompletionItem(entity, vscode.CompletionItemKind.Text);
+        }
         completion.range = wordRange;
         completions.push(completion);
     }
