@@ -278,13 +278,14 @@ const collisionPL = new PropertyList(
     "COLLISION",
     null,
     [
-        { name: 'type', options: ['CAPSULE'] }, // TODO triangle meshes
+        { name: 'type', options: ['CAPSULE', 'TRIMESH'] },
         { name: 'reaction', options: ['SLIDE', 'PENETRATE', 'HALT'] },
         { name: 'collisionGroups', options: keywords.flags.collisionGroups },
         { name: 'collideWith', options: keywords.flags.collisionGroups },
         { name: 'radius', options: [] },
         { name: 'height', options: [] },
         { name: 'offset', options: [] },
+        { name: 'collisionMesh', options: [] }
     ]
 );
 
