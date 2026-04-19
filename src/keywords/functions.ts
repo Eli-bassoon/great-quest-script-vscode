@@ -60,6 +60,8 @@ export const functions: kcScriptFunction[] = [
 	{ name: "TakeDamage", script: true, sequence: false },
 	{ name: "SetSavePoint", script: true, sequence: false },
 	{ name: "SetUpdatesEnabled", script: true, sequence: false },
+	{ name: "Entity.EnableUpdates", script: true, sequence: false },
+	{ name: "Entity.DisableUpdates", script: true, sequence: false },
 	{ name: "SetAIGoal", script: true, sequence: false },
 	{ name: "AttachSensor", script: true, sequence: false },
 	{ name: "Attach", script: true, sequence: false },

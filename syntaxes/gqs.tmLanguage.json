@@ -89,7 +89,7 @@
 			"patterns": [
 				{
 					"name": "keyword.other.kcscript.function.gqs",
-					"match": "Entity\\.Activate(Special)?|Entity\\.Deactivate|TerminateEntity|SetFlags|ClearFlags|InitFlags|SetTarget|SetAnimationSpeed|SetAxisPosition|SetPosition|AddToAxisPosition|AddPosition|SetAxisRotation|SetRotation|AddToAxisRotation|AddRotation|RotateRight|RotateLeft|LookAtTargetEntity|SetAnimation|SetSequence|Wait(ForAxisRotation|ForFullRotation|ForAnimation)?|Loop|ApplyImpulse|ShowDialog|SetAlarm|TriggerEvent|PlaySound|SetVariable|AddToVariable|SendNumber|SpawnParticleEffect|KillParticleEffect|SendPlayerHasItem|SetPlayerHasItem|TakeDamage|SetSavePoint|Entity\\.EnableUpdates|Entity\\.DisableUpdates|SetAIGoal|Attach(Sensor)?|Detach|ActivateCamera|DeactivateCamera|SetCameraTarget|SetCameraPivot|SetCameraParam"
+					"match": "Entity\\.Activate(Special)?|Entity\\.Deactivate|TerminateEntity|SetFlags|ClearFlags|InitFlags|SetTarget|SetAnimationSpeed|SetAxisPosition|SetPosition|AddToAxisPosition|AddPosition|SetAxisRotation|SetRotation|AddToAxisRotation|AddRotation|RotateRight|RotateLeft|LookAtTargetEntity|SetAnimation|SetSequence|Wait(ForAxisRotation|ForFullRotation|ForAnimation)?|Loop|ApplyImpulse|ShowDialog|SetAlarm|TriggerEvent|PlaySound|SetVariable|AddToVariable|SendNumber|SpawnParticleEffect|KillParticleEffect|SendPlayerHasItem|SetPlayerHasItem|TakeDamage|SetSavePoint|Entity\\.EnableUpdates|Entity\\.DisableUpdates|SetUpdatesEnabled|SetAIGoal|Attach(Sensor)?|Detach|ActivateCamera|DeactivateCamera|SetCameraTarget|SetCameraPivot|SetCameraParam"
 				},
 				{
 					"name": "keyword.other.kcscript.cause.gqs",

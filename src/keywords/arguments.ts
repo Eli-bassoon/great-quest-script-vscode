@@ -160,6 +160,10 @@ export const functions = {
 		"TERRAIN",
 		"BOTH"
 	],
+    "SetUpdatesEnabled": [
+        "true",
+        "false",
+    ],
 	"SetCameraParam": [
 		"PIVOT_DISTANCE",
 		"TARGET_OFFSET_X",
