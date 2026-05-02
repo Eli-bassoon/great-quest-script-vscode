@@ -45,6 +45,7 @@ export const functions: kcScriptFunction[] = [
 	{ name: "WaitForFullRotation", script: false, sequence: true },
 	{ name: "WaitForAnimation", script: false, sequence: true },
 	{ name: "Loop", script: false, sequence: true },
+	{ name: "Prompt", script: true, sequence: true },
 	{ name: "ApplyImpulse", script: true, sequence: true },
 	{ name: "ShowDialog", script: true, sequence: false },
 	{ name: "SetAlarm", script: true, sequence: true },
