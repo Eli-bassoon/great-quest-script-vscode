@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.2.1
+
+- **Prompt**
+- Recognize `Prompt` command and add dev console information.
+
 ## 0.2.0
 
 - **Minor fixes and features**
