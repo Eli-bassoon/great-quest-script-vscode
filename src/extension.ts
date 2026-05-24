@@ -6,6 +6,7 @@ import { GQSDocumentSymbolProvider } from './symbols';
 import { GQSHoverProvider } from './hover';
 import { GQSCodeActionProvider } from './codeactions';
 import { updateDialogDecorations, decorationType as dialogDecorationType } from './dialoghints';
+import { updateDiagnostics } from './diagnostics';
 
 const LANGUAGE = 'gqs';
 
@@ -50,6 +51,11 @@ export function activate(context: vscode.ExtensionContext) {
         hoverProvider,
         codeActionProvider,
     );
+    
+    // Diagnostics
+    updateDiagnostics();
+    vscode.window.onDidChangeActiveTextEditor(updateDiagnostics, null, context.subscriptions);
+    vscode.workspace.onDidChangeTextDocument(updateDiagnostics, null, context.subscriptions);
 
     // Dialog decorations
     updateDialogDecorations();

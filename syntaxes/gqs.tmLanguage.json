@@ -33,7 +33,7 @@
 			"patterns": [
 				{
 					"name": "variable.other.gqs",
-					"match": "[a-zA-Z_/\\.\\\\][\\w\\-\\./\\\\]*"
+					"match": "[a-zA-Z_/\\.\\\\](\\\\ |[\\w\\-\\./\\\\])*"
 				},
 				{
 					"name": "variable.other.seqs.gqs",
@@ -101,39 +101,39 @@
 			"patterns": [
 				{
 					"name": "constant.language.kscript.argument.onlevel.gqs",
-					"match": "BEGIN|END"
+					"match": "(BEGIN|END)(?!\\w)"
 				},
 				{
 					"name": "constant.language.kscript.argument.onplayer.gqs",
-					"match": "INTERACT|BUMPS|TARGET_FOR_ATTACK|PICKUP_ITEM"
+					"match": "(INTERACT|BUMPS|TARGET_FOR_ATTACK|PICKUP_ITEM)(?!\\w)"
 				},
 				{
 					"name": "constant.language.kscript.argument.onactor.gqs",
-					"match": "BUMPS|HEAL|DEATH"
+					"match": "(BUMPS|HEAL|DEATH)(?!\\w)"
 				},
 				{
 					"name": "constant.language.kscript.argument.ondamage.gqs",
-					"match": "FIRE|ICE|MELEE|RANGED|FALL|UNNAMED_TYPE_\\d\\d?"
+					"match": "(FIRE|ICE|MELEE|RANGED|FALL|UNNAMED_TYPE_\\d\\d?)(?!\\w)"
 				},
 				{
 					"name": "constant.language.kscript.argument.onalarm.gqs",
-					"match": "REPEAT|FINISHED"
+					"match": "(REPEAT|FINISHED)(?!\\w)"
 				},
 				{
 					"name": "constant.language.kscript.argument.ondialog.gqs",
-					"match": "BEGIN|ADVANCE"
+					"match": "(BEGIN|ADVANCE)(?!\\w)"
 				},
 				{
 					"name": "constant.language.kscript.argument.onreceivenumber.gqs",
-					"match": "EQUAL_TO|NOT_EQUAL_TO|LESS_THAN(_OR_EQUAL_TO)?|GREATER_THAN(_OR_EQUAL_TO)?"
+					"match": "(EQUAL_TO|NOT_EQUAL_TO|LESS_THAN(_OR_EQUAL_TO)?|GREATER_THAN(_OR_EQUAL_TO)?)(?!\\w)"
 				},
 				{
 					"name": "constant.language.kcscript.argument.onentity.gqs",
-					"match": "ENTERS_TARGET_WAYPOINT_AREA|LEAVES_TARGET_WAYPOINT_AREA|ENTERS_WAYPOINT_AREA|LEAVES_WAYPOINT_AREA"
+					"match": "(ENTERS_TARGET_WAYPOINT_AREA|LEAVES_TARGET_WAYPOINT_AREA|ENTERS_WAYPOINT_AREA|LEAVES_WAYPOINT_AREA)(?!\\w)"
 				},
 				{
 					"name": "constant.language.kscript.argument.onwaypoint.gqs",
-					"match": "ENTITY_ENTERS|ENTITY_LEAVES"
+					"match": "(ENTITY_ENTERS|ENTITY_LEAVES)(?!\\w)"
 				},
 				{
 					"name": "constant.language.kscript.argument.axis.gqs",
@@ -145,31 +145,31 @@
 				},
 				{
 					"name": "constant.language.kscript.argument.sendnumber.gqs",
-					"match": "LITERAL|VARIABLE|RANDOM"
+					"match": "(LITERAL|VARIABLE|RANDOM)(?!\\w)"
 				},
 				{
 					"name": "constant.language.kscript.argument.setaigoal.gqs",
-					"match": "FIND|FLEE|WANDER|GUARD|DEAD|SLEEP"
+					"match": "(FIND|FLEE|WANDER|GUARD|DEAD|SLEEP)(?!\\w)"
 				},
 				{
 					"name": "constant.language.kscript.argument.attach.gqs",
-					"match": "ATTACK_SENSOR|BUMP_SENSOR|LAUNCHER|PARTICLE_EMITTER"
+					"match": "(ATTACK_SENSOR|BUMP_SENSOR|LAUNCHER|PARTICLE_EMITTER)(?!\\w)"
 				},
 				{
 					"name": "constant.language.kscript.argument.detach.gqs",
-					"match": "PARTICLE_EMITTER"
+					"match": "(PARTICLE_EMITTER)(?!\\w)"
 				},
 				{
 					"name": "constant.language.kscript.argument.activatespecial.gqs",
-					"match": "ENTITIES|TERRAIN|BOTH"
+					"match": "(ENTITIES|TERRAIN|BOTH)(?!\\w)"
 				},
 				{
 					"name": "constant.language.kscript.argument.setcameraparam.gqs",
-					"match": "PIVOT_DISTANCE|TARGET_OFFSET_X|TARGET_OFFSET_Y|TARGET_OFFSET_Z|PIVOT_OFFSET_X|PIVOT_OFFSET_Y|PIVOT_OFFSET_Z|TRANSITION_DURATION|LOCK_PIVOT_Y"
+					"match": "(PIVOT_DISTANCE|TARGET_OFFSET_X|TARGET_OFFSET_Y|TARGET_OFFSET_Z|PIVOT_OFFSET_X|PIVOT_OFFSET_Y|PIVOT_OFFSET_Z|TRANSITION_DURATION|LOCK_PIVOT_Y)(?!\\w)"
 				},
 				{
 					"name": "constant.language.kcscript.argument.item.gqs",
-					"match": "NONE|STONE_FIRE|STONE_ICE|STONE_SPEED|STONE_SHRINK|STONE_LIGHTNING|COIN_G|COIN_S|COIN_B|GEM_D|GEM_S|GEM_R|GEM_A|DOOR_KEY|CHEST_KEY|BONE|CHECKPOINT|SEED|EXTRA_BIN_19|EXTRA_BIN_20|MAP_00|MAP_01|MAP_02|MAP_03|MAP_04|MAP_05|MAP_06|MAP_07|MAP_08|MAP_09|MAP_10|MAP_11|MAP_12|MAP_13|MAP_14|MAP_15|MAP_16|MAP_17|MAP_18|MAP_19|MAP_20|MAP_21|MAP_22|MAP_23|HONEY_POT|ENGINE_ROOM_KEY|MAYOR_HOUSE_KEY|CLOVER_GATE_KEY|CLOVER|FAKE_CLOVER|FAIRY_TOWN_KEY_1|FAIRY_TOWN_KEY_2|FAIRY_TOWN_KEY_3|TREE_KEY|ENGINE_FUEL|SHRUNK_BONE_CRUSHER|ENGINE_KEY|STATUE|SQUARE_ARTIFACT|CIRCLE_ARTIFACT|TRIANGLE_ARTIFACT|CROWN|GRIM_BITE|RUBY_SHARD|RUBY_SPHERE|RUBY_TEARDROP"
+					"match": "(NONE|STONE_FIRE|STONE_ICE|STONE_SPEED|STONE_SHRINK|STONE_LIGHTNING|COIN_G|COIN_S|COIN_B|GEM_D|GEM_S|GEM_R|GEM_A|DOOR_KEY|CHEST_KEY|BONE|CHECKPOINT|SEED|EXTRA_BIN_19|EXTRA_BIN_20|MAP_00|MAP_01|MAP_02|MAP_03|MAP_04|MAP_05|MAP_06|MAP_07|MAP_08|MAP_09|MAP_10|MAP_11|MAP_12|MAP_13|MAP_14|MAP_15|MAP_16|MAP_17|MAP_18|MAP_19|MAP_20|MAP_21|MAP_22|MAP_23|HONEY_POT|ENGINE_ROOM_KEY|MAYOR_HOUSE_KEY|CLOVER_GATE_KEY|CLOVER|FAKE_CLOVER|FAIRY_TOWN_KEY_1|FAIRY_TOWN_KEY_2|FAIRY_TOWN_KEY_3|TREE_KEY|ENGINE_FUEL|SHRUNK_BONE_CRUSHER|ENGINE_KEY|STATUE|SQUARE_ARTIFACT|CIRCLE_ARTIFACT|TRIANGLE_ARTIFACT|CROWN|GRIM_BITE|RUBY_SHARD|RUBY_SPHERE|RUBY_TEARDROP)(?!\\w)"
 				},
 				{
 					"name": "constant.language.gqs",

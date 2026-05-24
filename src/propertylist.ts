@@ -1,9 +1,18 @@
 import * as keywords from './keywords';
 import * as doctext from './doctext';
+import * as TC from './parser/typechecking';
+import { TokenTypes as TT, Token, TokenTypes } from './parser/tokens';
+
+const TTC = TC.TokenTC;
+const ATC = TC.ArrayTC;
+const VATC = TC.VarArrayTC;
+const ETC = TC.EnumTC;
 
 type GQSProperty = {
     name: string,
     options: string[],
+    typeChecker?: TC.TypeChecker<any>,
+    required?: (properties: Map<string, any>) => boolean,
 }
 
 export class PropertyList {
@@ -24,6 +33,10 @@ export class PropertyList {
 
         // Construct property map
         for (let keyval of this.properties) {
+            // Populate the type checker for enum types
+            if (keyval.options && (keyval.typeChecker === undefined)) {
+                keyval.typeChecker = new ETC(TC.IdentTC, keyval.options);
+            }
             this.propertyMap.set(keyval.name, keyval);
         }
 
@@ -43,6 +56,17 @@ export class PropertyList {
             curr = curr.parent;
         }
         return _propertyNames;
+    }
+
+    *iterFullProperties(): Generator<GQSProperty> {
+        // Provide properties, then walk parent for all properties
+        var curr: PropertyList | null = this;
+        while (curr) {
+            for (const property of curr.propertyMap.values()) {
+                yield property;
+            }
+            curr = curr.parent;
+        }
     }
 
     getEnumOptions(key: string): string[] {
@@ -74,6 +98,22 @@ export class PropertyList {
         // We didn't get any result
         return "";
     }
+
+    getPropertyType(key: string): GQSProperty | null {
+        // Look in this map for key, then look in parents
+        var res: GQSProperty | undefined;
+        var curr: PropertyList | null = this;
+        while (curr) {
+            res = curr.propertyMap.get(key);
+            if (res !== undefined) {
+                return res;
+            }
+            curr = curr.parent;
+        }
+
+        // We didn't get any result
+        return null;
+    }
 }
 
 /*
@@ -96,16 +136,17 @@ Entity
 
 */
 
+const alwaysTrue = (_: any) => true;
 const boolOptions = ['true', 'false'];
 
 const entityPL = new PropertyList(
     "ENTITY",
     null,
     [
-        { name: 'type', options: ["CHARACTER", "PROP", "PARTICLE_EMITTER", "WAYPOINT", "ACTOR", "ACTOR_BASE", "COIN", "GEM", "HONEY_POT", "ITEM", "MAGIC_STONE", "OBJ_KEY", "UNIQUE_ITEM"] },
-        { name: 'defaultFlags', options: keywords.flags.entity },
-        { name: 'boundingSpherePos', options: [] },
-        { name: 'boundingSphereRadius', options: [] },
+        { name: 'type', options: ["CHARACTER", "PROP", "PARTICLE_EMITTER", "WAYPOINT", "ACTOR", "ACTOR_BASE", "COIN", "GEM", "HONEY_POT", "ITEM", "MAGIC_STONE", "OBJ_KEY", "UNIQUE_ITEM"], required: alwaysTrue },
+        { name: 'defaultFlags', options: keywords.flags.entity, typeChecker: TC.VarArrEnumTC(keywords.flags.entity), required: alwaysTrue },
+        { name: 'boundingSpherePos', options: [], typeChecker: TC.Vector3TC },
+        { name: 'boundingSphereRadius', options: [], typeChecker: TC.PosNumTC },
     ]
 );
 
@@ -131,8 +172,8 @@ const particleEmitterPL = new PropertyList(
     [
         { name: 'srcBlend', options: blendModes },
         { name: 'dstBlend', options: blendModes },
-        { name: 'texture', options: [] },
-        { name: 'lifetime', options: [] },
+        { name: 'texture', options: [], typeChecker: TC.IdentTC },
+        { name: 'lifetime', options: [], typeChecker: TC.MakeBoundIntTC(-1, 60) },
     ]
 );
 
@@ -140,11 +181,11 @@ const waypointPL = new PropertyList(
     "WAYPOINT",
     entityPL,
     [
-        { name: 'waypointType', options: ["BOUNDING_SPHERE", "BOUNDING_BOX", "APPLY_WATER_CURRENT"] },
-        { name: 'prevWaypoint', options: [] },
-        { name: 'nextWaypoint', options: [] },
-        { name: 'boundingBoxDimensions', options: [] },
-        { name: 'strength', options: [] },
+        { name: 'waypointType', options: ["BOUNDING_SPHERE", "BOUNDING_BOX", "APPLY_WATER_CURRENT"], required: alwaysTrue },
+        { name: 'prevWaypoint', options: [], typeChecker: TC.IdentTC },
+        { name: 'nextWaypoint', options: [], typeChecker: TC.IdentTC },
+        { name: 'boundingBoxDimensions', options: [], typeChecker: TC.Vector3TC, required: (properties) => properties.get("waypointType") === "BOUNDING_BOX" },
+        { name: 'strength', options: [], typeChecker: TC.PosNumTC, required: (properties) => properties.get("waypointType") === "APPLY_WATER_CURRENT" },
     ]
 );
 
@@ -152,12 +193,12 @@ const actorBasePL = new PropertyList(
     "ACTOR_BASE",
     entityPL,
     [
-        { name: 'modelDesc', options: [] },
-        { name: 'proxyDesc', options: [] },
-        { name: 'skeleton', options: [] },
-        { name: 'channelCount', options: [] },
-        { name: 'animationSet', options: [] },
-        { name: 'actionSequenceTable', options: [] },
+        { name: 'modelDesc', options: [], typeChecker: TC.IdentTC },
+        { name: 'proxyDesc', options: [], typeChecker: TC.IdentTC },
+        { name: 'skeleton', options: [], typeChecker: TC.IdentTC },
+        { name: 'channelCount', options: [], typeChecker: TC.PosIntTC },
+        { name: 'animationSet', options: [], typeChecker: TC.IdentTC },
+        { name: 'actionSequenceTable', options: [], typeChecker: TC.IdentTC },
     ]
 );
 
@@ -171,10 +212,10 @@ const actorPL = new PropertyList(
     "ACTOR",
     actorBasePL,
     [
-        { name: 'maxHealth', options: [] },
-        { name: 'startHealth', options: [] },
-        { name: 'immuneMask', options: keywords.flags.functions.TakeDamage },
-        { name: 'invincibleDurationLimitMs', options: [] },
+        { name: 'maxHealth', options: [], typeChecker: TC.PosIntTC },
+        { name: 'startHealth', options: [], typeChecker: TC.PosIntTC },
+        { name: 'immuneMask', options: keywords.flags.functions.TakeDamage, typeChecker: TC.VarArrEnumTC(keywords.flags.functions.TakeDamage) },
+        { name: 'invincibleDurationLimitMs', options: [], typeChecker: TC.PosIntTC },
     ]
 );
 
@@ -182,42 +223,42 @@ const characterPL = new PropertyList(
     "CHARACTER",
     actorPL,
     [
-        { name: 'characterType', options: ["PLAYER", "STATIC", "WALKER", "FLYER", "SWIMMER"] },
-        { name: 'weaponMask', options: keywords.flags.functions.TakeDamage },
-        { name: 'aggressionTimer', options: [] },
-        { name: 'aiMeleeDamage', options: [] },
-        { name: 'attackGoalPercent', options: [] },
-        { name: 'attackStrength', options: [] },
-        { name: 'flyOrSwimSpeed', options: [] },
-        { name: 'avoidWater', options: boolOptions },
-        { name: 'homePos', options: [] },
-        { name: 'visionRange', options: [] },
-        { name: 'visionFov', options: [] },
-        { name: 'hearRange', options: [] },
-        { name: 'attackRange', options: [] },
-        { name: 'meleeRange', options: [] },
-        { name: 'missileRange', options: [] },
-        { name: 'monsterGroup', options: [] },
-        { name: 'fleePercent', options: [] },
-        { name: 'tauntPercent', options: [] },
-        { name: 'wanderGoalPercent', options: [] },
+        { name: 'characterType', options: ["PLAYER", "STATIC", "WALKER", "FLYER", "SWIMMER"], required: alwaysTrue },
+        { name: 'weaponMask', options: keywords.flags.functions.TakeDamage, typeChecker: TC.VarArrEnumTC(keywords.flags.functions.TakeDamage), required: alwaysTrue },
+        { name: 'aggressionTimer', options: [], typeChecker: TC.MakeBoundIntTC(0, 255), required: alwaysTrue },
+        { name: 'aiMeleeDamage', options: [], typeChecker: TC.PosIntTC, required: alwaysTrue },
+        { name: 'attackGoalPercent', options: [], typeChecker: TC.PercentTC, required: alwaysTrue },
+        { name: 'attackStrength', options: [], typeChecker: TC.PosIntTC },
+        { name: 'flyOrSwimSpeed', options: [], typeChecker: TC.PosIntTC, required: (properties) => (properties.get("characterType")?.literal === "SWIMMER" || properties.get("characterType")?.literal === "FLYER") },
+        { name: 'avoidWater', options: boolOptions, required: (properties) => (properties.get("characterType")?.literal === "FLYER") },
+        { name: 'homePos', options: [], typeChecker: TC.Vector4TC },
+        { name: 'visionRange', options: [], typeChecker: TC.PosNumTC },
+        { name: 'visionFov', options: [], typeChecker: TC.PosNumTC },
+        { name: 'hearRange', options: [], typeChecker: TC.PosNumTC },
+        { name: 'attackRange', options: [], typeChecker: TC.PosNumTC },
+        { name: 'meleeRange', options: [], typeChecker: TC.PosNumTC },
+        { name: 'missileRange', options: [], typeChecker: TC.PosNumTC },
+        { name: 'monsterGroup', options: [], typeChecker: TC.PosIntTC },
+        { name: 'fleePercent', options: [], typeChecker: TC.PercentTC },
+        { name: 'tauntPercent', options: [], typeChecker: TC.PercentTC },
+        { name: 'wanderGoalPercent', options: [], typeChecker: TC.PercentTC },
         { name: 'preferRanged', options: boolOptions },
-        { name: 'recoverySpeed', options: [] },
-        { name: 'meleeAttackSpeed', options: [] },
-        { name: 'rangedAttackSpeed', options: [] },
+        { name: 'recoverySpeed', options: [], typeChecker: TC.PosIntTC },
+        { name: 'meleeAttackSpeed', options: [], typeChecker: TC.PosIntTC },
+        { name: 'rangedAttackSpeed', options: [], typeChecker: TC.PosIntTC },
         { name: 'preferRun', options: boolOptions },
-        { name: 'protectLike', options: [] },
-        { name: 'homeRange', options: [] },
-        { name: 'activationRange', options: [] },
-        { name: 'climbHeight', options: [] },
-        { name: 'fallHeight', options: [] },
-        { name: 'aiRangeDamage', options: [] },
-        { name: 'closeDistance', options: [] },
-        { name: 'defendRange', options: [] },
-        { name: 'dodgePercent', options: [] },
-        { name: 'guardHome', options: [] },
-        { name: 'huntRange', options: [] },
-        { name: 'sleepGoalPercent', options: [] },
+        { name: 'protectLike', options: [], typeChecker: TC.IntTC },
+        { name: 'homeRange', options: [], typeChecker: TC.NumericTC },
+        { name: 'activationRange', options: [], typeChecker: TC.PosNumTC },
+        { name: 'climbHeight', options: [], typeChecker: TC.NumericTC },
+        { name: 'fallHeight', options: [], typeChecker: TC.NumericTC },
+        { name: 'aiRangeDamage', options: [], typeChecker: TC.NumericTC },
+        { name: 'closeDistance', options: [], typeChecker: TC.NumericTC },
+        { name: 'defendRange', options: [], typeChecker: TC.PosNumTC },
+        { name: 'dodgePercent', options: [], typeChecker: TC.PercentTC },
+        { name: 'guardHome', options: [], typeChecker: TC.IntTC },
+        { name: 'huntRange', options: [], typeChecker: TC.PosNumTC },
+        { name: 'sleepGoalPercent', options: [], typeChecker: TC.PercentTC },
     ]
 );
 
@@ -231,7 +272,7 @@ const uniqueItemPL = new PropertyList(
     "UNIQUE_ITEM",
     itemPL,
     [
-        { name: 'itemType', options: ["BONE", "SEED", "CLOVER", "FAKE_CLOVER", "ENGINE_FUEL", "TEMPLE_STATUE", "SQUARE_ARTIFACT", "CIRCLE_ARTIFACT", "TRIANGLE_ARTIFACT", "BONE_CRUNCHER_STATUE", "CROWN", "RUBY_SHARD", "RUBY_SPHERE", "RUBY_TEARDROP"] }
+        { name: 'itemType', options: ["BONE", "SEED", "CLOVER", "FAKE_CLOVER", "ENGINE_FUEL", "TEMPLE_STATUE", "SQUARE_ARTIFACT", "CIRCLE_ARTIFACT", "TRIANGLE_ARTIFACT", "BONE_CRUNCHER_STATUE", "CROWN", "RUBY_SHARD", "RUBY_SPHERE", "RUBY_TEARDROP"], required: alwaysTrue }
     ]
 );
 
@@ -239,7 +280,7 @@ const coinPL = new PropertyList(
     "COIN",
     itemPL,
     [
-        { name: 'coinType', options: ["COPPER", "SILVER", "GOLD"] },
+        { name: 'coinType', options: ["COPPER", "SILVER", "GOLD"], required: alwaysTrue },
     ]
 );
 
@@ -247,7 +288,7 @@ const gemPL = new PropertyList(
     "GEM",
     itemPL,
     [
-        { name: 'gemType', options: ["AMETHYST", "RUBY", "DIAMOND", "SAPPHIRE"] },
+        { name: 'gemType', options: ["AMETHYST", "RUBY", "DIAMOND", "SAPPHIRE"], required: alwaysTrue },
     ]
 );
 
@@ -261,7 +302,7 @@ const magicStonePL = new PropertyList(
     "MAGIC_STONE",
     itemPL,
     [
-        { name: 'stoneType', options: ["FIRE", "ICE", "SPEED", "SHRINK"] },
+        { name: 'stoneType', options: ["FIRE", "ICE", "SPEED", "SHRINK"], required: alwaysTrue },
     ]
 );
 
@@ -269,7 +310,7 @@ const objKeyPL = new PropertyList(
     "OBJ_KEY",
     itemPL,
     [
-        { name: 'keyType', options: ["DOOR", "CHEST", "SLICK_WILLY", "CLOVER_GATE", "FAIRY_TOWN_A", "FAIRY_TOWN_B", "FAIRY_TOWN_C", "TREE_OF_KNOWLEDGE", "ENGINE_ROOM"] },
+        { name: 'keyType', options: ["DOOR", "CHEST", "SLICK_WILLY", "CLOVER_GATE", "FAIRY_TOWN_A", "FAIRY_TOWN_B", "FAIRY_TOWN_C", "TREE_OF_KNOWLEDGE", "ENGINE_ROOM"], required: alwaysTrue },
     ]
 );
 
@@ -278,14 +319,14 @@ const collisionPL = new PropertyList(
     "COLLISION",
     null,
     [
-        { name: 'type', options: ['CAPSULE', 'TRIMESH'] },
-        { name: 'reaction', options: ['SLIDE', 'PENETRATE', 'HALT'] },
-        { name: 'collisionGroups', options: keywords.flags.collisionGroups },
-        { name: 'collideWith', options: keywords.flags.collisionGroups },
-        { name: 'radius', options: [] },
-        { name: 'height', options: [] },
-        { name: 'offset', options: [] },
-        { name: 'collisionMesh', options: [] }
+        { name: 'type', options: ['CAPSULE', 'TRIMESH'], required: alwaysTrue },
+        { name: 'reaction', options: ['SLIDE', 'PENETRATE', 'HALT'], required: alwaysTrue },
+        { name: 'collisionGroups', options: keywords.flags.collisionGroups, typeChecker: TC.VarArrEnumTC(keywords.flags.collisionGroups), required: alwaysTrue },
+        { name: 'collideWith', options: keywords.flags.collisionGroups, typeChecker: TC.VarArrEnumTC(keywords.flags.collisionGroups), required: alwaysTrue },
+        { name: 'radius', options: [], typeChecker: TC.PosNumTC, required: (properties) => (properties.get("type")?.literal === "CAPSULE") },
+        { name: 'height', options: [], typeChecker: TC.PosNumTC, required: (properties) => (properties.get("type")?.literal === "CAPSULE") },
+        { name: 'offset', options: [], typeChecker: TC.NumericTC, required: (properties) => (properties.get("type")?.literal === "CAPSULE") },
+        { name: 'collisionMesh', options: [], typeChecker: TC.IdentTC, required: (properties) => (properties.get("type")?.literal === "TRIMESH") }
     ]
 );
 
@@ -294,14 +335,14 @@ const entityInstPL = new PropertyList(
     "ENTITY_INSTANCE",
     null,
     [
-        { name: 'description', options: [] },
-        { name: 'priority', options: [] },
-        { name: 'targetEntity', options: [] },
-        { name: 'flags', options: keywords.flags.entity },
+        { name: 'description', options: [], typeChecker: TC.IdentTC, required: alwaysTrue },
+        { name: 'priority', options: [], typeChecker: TC.IntTC },
+        { name: 'targetEntity', options: [], typeChecker: TC.IdentTC },
+        { name: 'flags', options: keywords.flags.entity, typeChecker: TC.VarArrEnumTC(keywords.flags.entity) },
         { name: 'billboardAxis', options: ["X", "Y", "Z"] },
-        { name: 'position', options: [] },
-        { name: 'rotation', options: [] },
-        { name: 'scale', options: [] },
+        { name: 'position', options: [], required: alwaysTrue, typeChecker: TC.Vector3TC },
+        { name: 'rotation', options: [], typeChecker: TC.Vector3TC  },
+        { name: 'scale', options: [], typeChecker: TC.Vector3TC  },
     ]
 );
 
@@ -310,11 +351,11 @@ const launcherInstPL = new PropertyList(
     "LAUNCHER",
     null,
     [
-        { name: 'projectileModel', options: [] },
-        { name: 'cruiseParticleEffect', options: [] },
-        { name: 'hitParticleEffect', options: [] },
-        { name: 'projectileLifeTime', options: [] },
-        { name: 'projectileSpeed', options: [] },
+        { name: 'projectileModel', options: [], typeChecker: TC.IdentTC },
+        { name: 'cruiseParticleEffect', options: [], typeChecker: TC.IdentTC },
+        { name: 'hitParticleEffect', options: [], typeChecker: TC.IdentTC },
+        { name: 'projectileLifeTime', options: [], typeChecker: TC.PosNumTC, required: alwaysTrue },
+        { name: 'projectileSpeed', options: [], typeChecker: TC.PosNumTC, required: alwaysTrue },
     ]
 );
 
