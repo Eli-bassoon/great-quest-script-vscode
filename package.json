@@ -5,7 +5,7 @@
   "description": "Language support for Great Quest Script",
   "version": "0.2.1",
   "engines": {
-    "vscode": "^1.108.1"
+    "vscode": "^1.120.0"
   },
   "categories": [
     "Programming Languages"
@@ -47,7 +47,7 @@
       }
     ],
     "configuration": {
-      "title": "Great Quest Script Extension",
+      "title": "Great Quest Script",
       "type": "object",
       "properties": {
         "greatQuestScript.inlineDialog": {
@@ -94,12 +94,15 @@
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
-    "@types/node": "^22.19.17",
-    "@types/vscode": "^1.108.1",
+    "@types/node": "22.x",
+    "@types/vscode": "^1.120.0",
     "@vscode/test-cli": "^0.0.12",
     "@vscode/test-electron": "^2.5.2",
-    "eslint": "^9.39.2",
+    "eslint": "^9.39.3",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.52.0"
+    "typescript-eslint": "^8.56.1"
+  },
+  "dependencies": {
+    "@vscode/vsce": "^3.9.1"
   }
 }
