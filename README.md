@@ -14,6 +14,10 @@ Language support for Great Quest Script (`.gqs`) files, used by [FrogLord](https
 * Hover to see documentation
 * Automatic generation of sequence hashes
 
+## Installation
+
+This extension is available on the [VSCode Marketplace](https://marketplace.visualstudio.com/items?itemName=eli-bassoon.great-quest-script).
+
 ## Extension Settings
 
 * `greatQuestScript.inlineDialog`: Toggles whether to show dialog inline.
