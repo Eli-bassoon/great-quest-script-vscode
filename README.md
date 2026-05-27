@@ -21,22 +21,6 @@ Language support for Great Quest Script (`.gqs`) files, used by [FrogLord](https
 * `greatQuestScript.addSpaceAfterAutocomplete`: Whether to add a space after accepting certain autocompleted suggestions.
 * `greatQuestScript.autogenerateHash`: Whether to automatically generate a random hash when autocompleting a sequence section header. This has no effect if `goToNextlineInSectionHeaders` is turned off.
 
-## Installation
-
-1. First, download the latest version of the extension from https://github.com/Eli-bassoon/great-quest-script-vscode/releases as a `.vsix` file
-
-2. Click the extension button on the sidebar, then the three dots menu, then "Install from VSIX..."
-
-   ![installation](./images/installation.png)
-
-3. Select the `.vsix` file you just downloaded.
-
-Alternatively, install it from the command line using the following command, replacing `<VERSION>` with the actual version you downloaded.
-
-```bash
-code --install-extension great-quest-script-<VERSION>.vsix
-```
-
 ## Release Notes
 
 See [CHANGELOG.md](./CHANGELOG.md)

@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.3.0
+
+- **Diagnostics**
+- Provides diagnostics about syntax errors for the current file.
+
 ## 0.2.1
 
 - **Prompt**
