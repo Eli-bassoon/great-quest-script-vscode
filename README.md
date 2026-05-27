@@ -4,7 +4,7 @@ Language support for Great Quest Script (`.gqs`) files, used by [FrogLord](https
 
 ## Features
 
-[Features.webm](https://github.com/user-attachments/assets/bc0f7fdc-f66a-4201-aa20-5a4fdc320b9e)
+[Features.webm](https://github.com/user-attachments/assets/16159e02-678e-4aa8-a671-4014c637a98d)
 
 * Syntax highlighting
 * Autocomplete
