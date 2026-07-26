@@ -294,8 +294,41 @@ export class BoundedNumericTC<TokenType extends TT.Numeric> implements TypeCheck
     }
 }
 
+// Checks for a numeric type in range, exclusive
+export class BoundedNumericExTC<TokenType extends TT.Numeric> implements TypeChecker<TokenType> {
+    checkingType: Constructor<TokenType>;
+    lb: number;
+    ub: number;
+
+    constructor(checkingType: Constructor<TokenType>, lb: number = -Infinity, ub: number = Infinity) {
+        this.checkingType = checkingType;
+        this.lb = lb;
+        this.ub = ub;
+    }
+
+    check(arr: ConsumingArray<Token<any>>): TokenType | TypeError[] {
+        const token = arr.consume();
+        // Correct type
+        if (token instanceof this.checkingType) {
+            // In range
+            if (this.lb < token.literal && token.literal < this.ub) {
+                return token as TokenType;
+            }
+            // Out of range
+            else {
+                return [new TypeError(`Value \`${token.literal}\` out of range (${this.lb}, ${this.ub})`, token)];
+            }
+        }
+        return [new TypeError("Invalid type", token)];
+    }
+}
+
 export function MakeBoundNumTC(lb: number = -Infinity, ub: number = Infinity) {
     return new BoundedNumericTC<TT.Numeric>(TT.Numeric, lb, ub);
+}
+
+export function MakeBoundNumExTC(lb: number = -Infinity, ub: number = Infinity) {
+    return new BoundedNumericExTC<TT.Numeric>(TT.Numeric, lb, ub);
 }
 
 export function MakeBoundIntTC(lb: number = -Infinity, ub: number = Infinity) {

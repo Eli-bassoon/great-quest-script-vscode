@@ -173,7 +173,26 @@ const particleEmitterPL = new PropertyList(
         { name: 'srcBlend', options: blendModes },
         { name: 'dstBlend', options: blendModes },
         { name: 'texture', options: [], typeChecker: TC.IdentTC },
-        { name: 'lifetime', options: [], typeChecker: TC.MakeBoundIntTC(-1, 60) },
+        { name: 'lifeTime', options: [], typeChecker: new TC.OrTC([TC.MakeBoundNumTC(-1, -1), TC.MakeBoundNumExTC(0, 60)]) }, // Range: {-1} U (0, 60)
+        { name: 'burstMode', options: [], typeChecker: TC.IntTC },
+        { name: 'emitAngle', options: [], typeChecker: TC.NumericTC },
+        { name: 'emitAngleVariance', options: [], typeChecker: TC.NumericTC },
+        { name: 'partPerSecond', options: [], typeChecker: TC.IntTC },
+        { name: 'speed', options: [], typeChecker: TC.NumericTC },
+        { name: 'speedVariance', options: [], typeChecker: TC.NumericTC },
+        { name: 'lifeVariance', options: [], typeChecker: TC.NumericTC },
+        { name: 'sizeBegin', options: [], typeChecker: TC.NumericTC },
+        { name: 'sizeEnd', options: [], typeChecker: TC.NumericTC },
+        { name: 'sizeVariance', options: [], typeChecker: TC.NumericTC },
+        { name: 'colorBegin', options: [], typeChecker: TC.IntTC },
+        { name: 'colorEnd', options: [], typeChecker: TC.IntTC },
+        { name: 'colorVariance', options: [], typeChecker: TC.IntTC },
+        { name: 'gravityBegin', options: [], typeChecker: TC.Vector4TC },
+        { name: 'gravityEnd', options: [], typeChecker: TC.Vector4TC },
+        { name: 'gravityVariance', options: [], typeChecker: TC.NumericTC },
+        { name: 'lineLeft', options: [], typeChecker: TC.MakeBoundNumTC(0, 20) },
+        { name: 'lineRight', options: [], typeChecker: TC.MakeBoundNumTC(0, 20) },
+        { name: 'orientation', options: [], typeChecker: TC.NumericTC },
     ]
 );
 
