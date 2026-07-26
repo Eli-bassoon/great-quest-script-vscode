@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.3.1
+- **Particle Emitter**
+- Adds more recognized parameters for Particle Emitter entity descriptions
+
 ## 0.3.0
 
 - **Diagnostics**
@@ -25,7 +29,6 @@
   - Fix XYZ being highlighted when it shouldn't
   - Stop dialog hints displaying backslashes in escaped quotes
   - Fix blank sections causing exceptions sometimes
-
 
 ## 0.1.0
 
